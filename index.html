@@ -45,6 +45,10 @@
   #loginBtn { font:inherit; font-size:15px; font-weight:800; padding:13px; border-radius:11px; border:none; background:var(--gold); color:var(--on-gold); cursor:pointer; margin-top:6px; }
   #loginBtn:hover { background:#efc76a; } #loginBtn:disabled { opacity:.6; cursor:default; }
   .auth-err { color:#d5514e; font-size:13px; margin:2px 0 0; min-height:16px; }
+  .pw-wrap { position:relative; display:block; }
+  .pw-wrap input { width:100%; padding-right:44px; }
+  .pw-eye { position:absolute; right:6px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:16px; opacity:.55; padding:6px; line-height:1; }
+  .pw-eye:hover { opacity:1; }
   @media (max-width:820px){ .auth-wrap{ grid-template-columns:1fr; width:420px; } .auth-brand{ padding:30px; gap:10px; } .auth-features{ display:none; } .auth-brand h2{ font-size:22px; } }
   .whoami { font-size:12.5px; font-weight:700; color:var(--ink-soft); }
   .qv-table{ width:100%; border-collapse:collapse; font-size:13px; }
@@ -277,7 +281,7 @@
       <p class="a-sub">Sign in with your Pro360 agent login.</p>
       <form id="loginForm" autocomplete="on">
         <label class="a-lbl">Email<input id="loginEmail" type="email" placeholder="you@pro360.technology" required autocomplete="username"></label>
-        <label class="a-lbl">Password<input id="loginPass" type="password" placeholder="••••••••" required autocomplete="current-password"></label>
+        <label class="a-lbl">Password<span class="pw-wrap"><input id="loginPass" type="password" placeholder="••••••••" required autocomplete="current-password"><button type="button" class="pw-eye" id="pwEye" aria-label="Show password">👁</button></span></label>
         <button type="submit" id="loginBtn">Sign in</button>
         <p class="auth-err" id="authErr"></p>
       </form>
@@ -793,6 +797,7 @@ function setupAuth(){
     if(error){ err.textContent=error.message; return; }
     const { data }=await sb.auth.getSession(); boot(data.session);
   });
+  const pe=document.getElementById("pwEye"); if(pe) pe.addEventListener("click",()=>{ const i=document.getElementById("loginPass"); const sh=i.type==="password"; i.type=sh?"text":"password"; pe.textContent=sh?"🙈":"👁"; });
   document.getElementById("logoutBtn").addEventListener("click", async ()=>{ await sb.auth.signOut(); boot(null); });
   sb.auth.getSession().then(({data})=>boot(data.session));
 }
