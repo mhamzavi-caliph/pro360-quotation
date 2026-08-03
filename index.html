@@ -642,7 +642,7 @@ function quoteLines(all){
   const lines=[];
   all.ids.forEach(pid=>{ const c=calcOne(pid), p=PRODUCTS[pid], cyc=all.annual?"annual":"monthly";
     const subAmt=all.annual?c.seatsBilled:c.seats;
-    lines.push({ description:`${p.name} — ${c.t.name} · ${c.billUnits} ${p.unitp} · ${cyc}${c.mult<1?" (−"+Math.round((1-c.mult)*100)+"%)":""}${c.floored?" · minimum monthly":""}`, qty:1, unit_price:round2(subAmt), line_total:round2(subAmt) });
+    lines.push({ sku:("QS-"+pid+"-"+state.cfg[pid].tier).toUpperCase(), description:`${p.name} — ${c.t.name} · ${c.billUnits} ${p.unitp} · ${cyc}${c.mult<1?" (−"+Math.round((1-c.mult)*100)+"%)":""}${c.floored?" · minimum monthly":""}`, qty:1, unit_price:round2(subAmt), line_total:round2(subAmt) });
     c.addOn.forEach(a=>lines.push({ description:`${p.name} · ${a.name} (recurring, ${cyc})`, qty:1, unit_price:round2(all.annual?a.amt*ANNUAL_MONTHS:a.amt), line_total:round2(all.annual?a.amt*ANNUAL_MONTHS:a.amt) }));
     c.addYear.forEach(a=>lines.push({ description:`${p.name} · ${a.name} (yearly)`, qty:1, unit_price:round2(a.amt), line_total:round2(a.amt) }));
     c.addOnce.forEach(a=>lines.push({ description:`${p.name} · ${a.name}${a.post?" (after delivery)":" (one-time)"}`, qty:1, unit_price:round2(a.amt), line_total:round2(a.amt) }));
@@ -678,7 +678,10 @@ async function saveToFinance(){
     const valid_until=new Date(Date.now()+30*864e5).toISOString().slice(0,10);
     const rq=await sb.from("quotations").insert({ customer_id, agent_id:(AGENT&&AGENT.id)||null, valid_until, status:"draft", subtotal, tax_pct, tax_amount, total, notes:quoteNotes(all) }).select("id,quote_no").single();
     if(rq.error) throw rq.error;
-    const items=lines.map(l=>({ quotation_id:rq.data.id, description:l.description, qty:l.qty, unit_price:l.unit_price, line_total:l.line_total }));
+    const skus=[...new Set(lines.filter(l=>l.sku).map(l=>l.sku))];
+    let prodMap={};
+    if(skus.length){ const pr=await sb.from("products").select("id,sku").in("sku",skus); (pr.data||[]).forEach(x=>prodMap[x.sku]=x.id); }
+    const items=lines.map(l=>({ quotation_id:rq.data.id, product_id:(l.sku&&prodMap[l.sku])||null, description:l.description, qty:l.qty, unit_price:l.unit_price, line_total:l.line_total }));
     const ri=await sb.from("quotation_items").insert(items);
     if(ri.error) throw ri.error;
     toast("Saved to Finance as "+rq.data.quote_no+" ✓");
