@@ -128,6 +128,14 @@
   .pdfbtn { font:inherit; font-size:13.5px; font-weight:700; padding:11px 18px; border-radius:11px; border:none; background:var(--gold); color:var(--on-gold); cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:.15s; box-shadow:var(--shadow); }
   .pdfbtn:hover { background:#efc76a; }
 
+  .custcard { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow); margin-bottom:22px; }
+  .cust-head { font-size:14px; font-weight:800; color:var(--ink); margin-bottom:14px; } .cust-head span { color:var(--ink-faint); font-weight:600; font-size:12px; }
+  .custgrid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:640px){ .custgrid{ grid-template-columns:1fr; } }
+  .custgrid label { display:flex; flex-direction:column; gap:6px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); }
+  .custgrid label.wide { grid-column:1 / -1; }
+  .custgrid input, .custgrid textarea { font:inherit; font-size:14px; font-weight:500; text-transform:none; letter-spacing:normal; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink); resize:vertical; }
+  .custgrid input:focus, .custgrid textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-wash); }
   .tiers { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin-bottom:24px; }
   @media (max-width:560px){ .tiers{ grid-template-columns:1fr; } }
   .tier { position:relative; background:var(--panel); border:1.5px solid var(--line); border-radius:var(--radius); padding:18px 16px; box-shadow:var(--shadow); cursor:pointer; transition:.16s; display:flex; flex-direction:column; }
@@ -228,6 +236,8 @@
     .qs-top { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #14303e; padding-bottom:14px; margin-bottom:20px; }
     .qs-logo { height:34px; width:auto; display:block; margin-bottom:7px; }
     .qs-kicker { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#666; }
+    .qs-billto { margin-bottom:16px; font-size:12px; color:#333; line-height:1.5; }
+    .qs-bl-label { font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:#888; margin-bottom:3px; font-weight:700; }
     .qs-meta { text-align:right; font-size:12px; }
     .qs-meta > div { margin-bottom:4px; } .qs-meta span { color:#888; margin-right:8px; text-transform:uppercase; letter-spacing:.05em; font-size:10px; } .qs-meta b { color:#111; }
     .qs-table { width:100%; border-collapse:collapse; }
@@ -344,11 +354,18 @@
         <button data-cycle="annual" aria-pressed="false">Annual <span class="save">2 months free</span></button>
       </div>
     </div>
-    <div class="field" style="flex:1; min-width:190px;">
-      <label>Prepared for</label>
-      <input id="clientname" class="agencyinput" type="text" placeholder="Customer name (for the quote)" autocomplete="off">
+  </div>
+  <div class="custcard">
+    <div class="cust-head">Customer details <span>— reflected on the quote &amp; saved as your prospect in Finance</span></div>
+    <div class="custgrid">
+      <label>Customer / company<input id="clientname" type="text" placeholder="Company or customer name" autocomplete="off"></label>
+      <label>Contact person<input id="custContact" type="text" placeholder="Person in charge" autocomplete="off"></label>
+      <label>Email<input id="custEmail" type="email" placeholder="name@company.com" autocomplete="off"></label>
+      <label>Phone<input id="custPhone" type="text" placeholder="01x-xxxxxxx" autocomplete="off"></label>
+      <label class="wide">Address<textarea id="custAddr" rows="2" placeholder="Company address" autocomplete="off"></textarea></label>
     </div>
   </div>
+
   <span class="voltag" id="voltag"></span>
 
   <div class="includebar">
@@ -394,11 +411,11 @@
       <div class="qs-kicker" id="qs-kicker">Quotation</div>
     </div>
     <div class="qs-meta">
-      <div><span>Prepared for</span><b id="qs-for">—</b></div>
       <div><span>Prepared by</span><b id="qs-by">—</b></div>
       <div><span>Date</span><b id="qs-date">—</b></div>
     </div>
   </div>
+  <div class="qs-billto" id="qsBillto"></div>
   <table class="qs-table">
     <thead><tr><th>Item</th><th class="r">Qty / rate</th><th class="r">Amount</th></tr></thead>
     <tbody id="qs-body"></tbody>
@@ -466,7 +483,7 @@ const TAX_PCT=8;
 const CHECK='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 4L6 12L3 9" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const PAYMENT_STAGES=[{label:"Upon confirmation",pct:10},{label:"Upon 1st draft completed",pct:40},{label:"Balance upon delivery",pct:50}];
 
-let state={ product:ORDER[0], cycle:"monthly", cur:"RM|MYR", client:"", agent:"", cfg:{}, included:new Set() };
+let state={ product:ORDER[0], cycle:"monthly", cur:"RM|MYR", client:"", agent:"", cust:{contact:"",email:"",phone:"",address:""}, cfg:{}, included:new Set() };
 ORDER.forEach(pid=>{ const p=PRODUCTS[pid]; state.cfg[pid]={ tier:p.tiers[p.defaultTier].id, units:p.default, addons:new Set() }; });
 function P(){ return PRODUCTS[state.product]; }
 function CFG(){ return state.cfg[state.product]; }
@@ -554,6 +571,10 @@ range.addEventListener("input",()=>{ CFG().units=+range.value; render(); });
 unitnum.addEventListener("input",()=>{ CFG().units=Math.max(1,+unitnum.value||1); render(); });
 document.getElementById("cycle").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; state.cycle=b.dataset.cycle; render(); });
 document.getElementById("clientname").addEventListener("input",e=>{ state.client=e.target.value; });
+document.getElementById("custContact").addEventListener("input",e=>{ state.cust.contact=e.target.value; });
+document.getElementById("custEmail").addEventListener("input",e=>{ state.cust.email=e.target.value; });
+document.getElementById("custPhone").addEventListener("input",e=>{ state.cust.phone=e.target.value; });
+document.getElementById("custAddr").addEventListener("input",e=>{ state.cust.address=e.target.value; });
 document.getElementById("includeToggle").addEventListener("change",e=>{ e.target.checked?state.included.add(state.product):state.included.delete(state.product); render(); });
 document.getElementById("savepdf").addEventListener("click",()=>{ buildQuote(); window.print(); });
 window.addEventListener("beforeprint", buildQuote);
@@ -562,6 +583,10 @@ function syncControls(){
   const c=CFG();
   range.value=c.units; unitnum.value=c.units;
   document.getElementById("clientname").value=state.client;
+  document.getElementById("custContact").value=state.cust.contact||"";
+  document.getElementById("custEmail").value=state.cust.email||"";
+  document.getElementById("custPhone").value=state.cust.phone||"";
+  document.getElementById("custAddr").value=state.cust.address||"";
   document.querySelectorAll("#cycle button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.cycle===state.cycle));
   document.querySelectorAll("[data-add]").forEach(cb=>{ cb.checked=c.addons.has(cb.dataset.add); });
   document.getElementById("includeToggle").checked=state.included.has(state.product);
@@ -661,7 +686,8 @@ function buildQuote(){
   const all=calcAll(), mult=all.annual?ANNUAL_MONTHS:1;
   document.getElementById("qs-kicker").textContent=(all.ids.length>1?"Multi-product":PRODUCTS[all.ids[0]].name)+" · Quotation";
   document.getElementById("qs-fine").textContent=`Pro360 Technology · Web-based platform. Priced per unit; minimums apply per product. Annual billing = pay 10 months, get 12. This quote is an estimate and not a binding contract. Figures exclude applicable taxes.`;
-  document.getElementById("qs-for").textContent=state.client.trim()||"—";
+  const bl=[state.client.trim(), state.cust.contact, state.cust.email, state.cust.phone, state.cust.address].filter(Boolean).map(x=>String(x).replace(/</g,"&lt;"));
+  document.getElementById("qsBillto").innerHTML = bl.length ? '<div class="qs-bl-label">Prepared for</div>'+bl.join("<br>") : "";
   document.getElementById("qs-by").textContent=state.agent.trim()||"—";
   document.getElementById("qs-date").textContent=new Date().toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
   const rows=[];
@@ -725,9 +751,10 @@ async function saveToFinance(){
   try{
     const name=state.client.trim()||"(unnamed customer)";
     let customer_id=null;
+    const cust={ company_name:name, agent_id:(AGENT&&AGENT.id)||null, contact_person:(state.cust.contact||"").trim()||null, email:(state.cust.email||"").trim()||null, phone:(state.cust.phone||"").trim()||null, address:(state.cust.address||"").trim()||null };
     const r1=await sb.from("customers").select("id").ilike("company_name",name).maybeSingle();
-    if(r1.data) customer_id=r1.data.id;
-    else { const r2=await sb.from("customers").insert({ company_name:name, agent_id:(AGENT&&AGENT.id)||null }).select("id").single(); if(r2.error) throw r2.error; customer_id=r2.data.id; }
+    if(r1.data){ customer_id=r1.data.id; await sb.from("customers").update(cust).eq("id",customer_id); }
+    else { const r2=await sb.from("customers").insert(cust).select("id").single(); if(r2.error) throw r2.error; customer_id=r2.data.id; }
     const lines=quoteLines(all);
     const subtotal=round2(lines.reduce((s,l)=>s+l.line_total,0));
     const tax_pct=cfg.TAX_PCT||8, tax_amount=round2(subtotal*tax_pct/100), total=round2(subtotal+tax_amount);
