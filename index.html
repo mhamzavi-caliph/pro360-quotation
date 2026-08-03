@@ -211,6 +211,10 @@
   .modal-foot { border-top:1px solid var(--line); padding:16px 30px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; }
   .modal-foot .fnote { font-size:12.5px; color:var(--ink-faint); }
   .modal-foot .pick { font:inherit; font-size:13.5px; font-weight:700; padding:11px 20px; border-radius:11px; border:none; background:var(--gold); color:var(--on-gold); cursor:pointer; }
+  .pw-field { display:flex; flex-direction:column; gap:6px; font-size:11px; font-weight:800; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; }
+  .pw-field input { font:inherit; font-size:15px; font-weight:500; text-transform:none; letter-spacing:normal; padding:12px 14px; border-radius:11px; border:1px solid var(--line); background:var(--bg); color:var(--ink); width:100%; }
+  .pw-field input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-wash); }
+  .pw-msg { font-size:13px; margin:4px 0 0; min-height:16px; }
   body.locked { overflow:hidden; }
 
   .quotesheet { display:none; }
@@ -316,6 +320,7 @@
       <button class="toolbtn" id="savedOpen"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h7l3 3v7H3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5 3v3h5" stroke="currentColor" stroke-width="1.4"/></svg> Saved quotes (<span id="savedCount">0</span>)</button>
       <span class="whoami" id="whoami"></span>
       <a class="toolbtn" href="https://finance.pro360.technology" target="_blank" rel="noopener">Finance ↗</a>
+      <button class="toolbtn" id="pwBtn" title="Change password">🔑</button>
       <button class="toolbtn" id="themeBtn" title="Toggle light / dark">☀️</button>
       <button class="toolbtn" id="logoutBtn">Sign out</button>
     </div>
@@ -430,6 +435,20 @@
       <p class="mp-tag">Saved in your Finance system — quotes you save here also appear in Finance.</p>
     </div>
     <div class="modal-body" id="savedBody"></div>
+  </div>
+</div>
+
+<div class="modal" id="pwModal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+  <div class="modal-back" data-closepw></div>
+  <div class="modal-panel" style="max-width:420px">
+    <button class="modal-close" id="pwClose" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <div class="modal-head"><h3 class="mp-name" id="pwTitle">Change password</h3><p class="mp-tag">Set a new password for your Pro360 login.</p></div>
+    <div class="modal-body">
+      <label class="pw-field">New password<span class="pw-wrap"><input id="pwNew" type="password" autocomplete="new-password"><button type="button" class="pw-eye" id="pwEye2">👁</button></span></label>
+      <label class="pw-field">Confirm password<input id="pwNew2" type="password" autocomplete="new-password"></label>
+      <p class="pw-msg" id="pwMsg"></p>
+    </div>
+    <div class="modal-foot"><span class="fnote">Minimum 6 characters.</span><button class="pick" id="pwSave" type="button">Update password</button></div>
   </div>
 </div>
 
@@ -799,6 +818,22 @@ function setupAuth(){
   });
   const pe=document.getElementById("pwEye"); if(pe) pe.addEventListener("click",()=>{ const i=document.getElementById("loginPass"); const sh=i.type==="password"; i.type=sh?"text":"password"; pe.textContent=sh?"🙈":"👁"; });
   document.getElementById("logoutBtn").addEventListener("click", async ()=>{ await sb.auth.signOut(); boot(null); });
+  const pwm=document.getElementById("pwModal");
+  const openPw=()=>{ document.getElementById("pwNew").value=""; document.getElementById("pwNew2").value=""; document.getElementById("pwMsg").textContent=""; pwm.classList.add("open"); document.body.classList.add("locked"); document.getElementById("pwNew").focus(); };
+  const closePw=()=>{ pwm.classList.remove("open"); document.body.classList.remove("locked"); };
+  document.getElementById("pwBtn").addEventListener("click",openPw);
+  document.getElementById("pwClose").addEventListener("click",closePw);
+  pwm.addEventListener("click",e=>{ if(e.target.closest("[data-closepw]"))closePw(); });
+  const pe2=document.getElementById("pwEye2"); if(pe2) pe2.addEventListener("click",()=>{ const i=document.getElementById("pwNew"); const sh=i.type==="password"; i.type=sh?"text":"password"; pe2.textContent=sh?"🙈":"👁"; });
+  document.getElementById("pwSave").addEventListener("click",async ()=>{
+    const p1=document.getElementById("pwNew").value, p2=document.getElementById("pwNew2").value, msg=document.getElementById("pwMsg"); msg.style.color="#d5514e";
+    if(p1.length<6){ msg.textContent="Password must be at least 6 characters."; return; }
+    if(p1!==p2){ msg.textContent="Passwords do not match."; return; }
+    const sv=document.getElementById("pwSave"); sv.disabled=true; sv.textContent="Saving…";
+    const r=await sb.auth.updateUser({ password:p1 });
+    sv.disabled=false; sv.textContent="Update password";
+    if(r.error){ msg.textContent=r.error.message; } else { closePw(); toast("Password updated ✓"); }
+  });
   sb.auth.getSession().then(({data})=>boot(data.session));
 }
 document.getElementById("homeBtn").addEventListener("click",showLanding);
