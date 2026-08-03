@@ -280,6 +280,7 @@
       <button class="toolbtn" id="homeBtn"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2L2 7v7h4v-4h4v4h4V7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg> Home</button>
       <button class="toolbtn" id="savedOpen"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h7l3 3v7H3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5 3v3h5" stroke="currentColor" stroke-width="1.4"/></svg> Saved quotes (<span id="savedCount">0</span>)</button>
       <span class="whoami" id="whoami"></span>
+      <button class="toolbtn" id="themeBtn" title="Toggle light / dark">☀️</button>
       <button class="toolbtn" id="logoutBtn">Sign out</button>
     </div>
   </div>
@@ -748,6 +749,10 @@ document.getElementById("agentName").addEventListener("input",e=>{ state.agent=e
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&savedModal.classList.contains("open"))closeSaved(); });
 
 buildLandingTiles();
+(function(){ let m="dark"; try{ m=localStorage.getItem("pro360-quote-theme")||"dark"; }catch(e){} document.documentElement.setAttribute("data-theme",m);
+  const tb=document.getElementById("themeBtn");
+  if(tb){ tb.textContent=m==="dark"?"\u2600\ufe0f":"\ud83c\udf19";
+    tb.addEventListener("click",()=>{ const n=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark"; document.documentElement.setAttribute("data-theme",n); try{localStorage.setItem("pro360-quote-theme",n);}catch(e){} tb.textContent=n==="dark"?"\u2600\ufe0f":"\ud83c\udf19"; }); } })();
 loadProduct(ORDER[0]);   // pre-build the app view (kept hidden until signed in)
 document.getElementById("app").style.display="none";
 document.getElementById("landing").style.display="none";
