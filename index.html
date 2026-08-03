@@ -363,6 +363,7 @@
       <label>Email<input id="custEmail" type="email" placeholder="name@company.com" autocomplete="off"></label>
       <label>Phone<input id="custPhone" type="text" placeholder="01x-xxxxxxx" autocomplete="off"></label>
       <label class="wide">Address<textarea id="custAddr" rows="2" placeholder="Company address" autocomplete="off"></textarea></label>
+      <label class="wide">Notes<textarea id="custNotes" rows="2" placeholder="Notes about this prospect (needs, budget, follow-up…)" autocomplete="off"></textarea></label>
     </div>
   </div>
 
@@ -483,7 +484,7 @@ const TAX_PCT=8;
 const CHECK='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 4L6 12L3 9" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const PAYMENT_STAGES=[{label:"Upon confirmation",pct:10},{label:"Upon 1st draft completed",pct:40},{label:"Balance upon delivery",pct:50}];
 
-let state={ product:ORDER[0], cycle:"monthly", cur:"RM|MYR", client:"", agent:"", cust:{contact:"",email:"",phone:"",address:""}, cfg:{}, included:new Set() };
+let state={ product:ORDER[0], cycle:"monthly", cur:"RM|MYR", client:"", agent:"", cust:{contact:"",email:"",phone:"",address:"",notes:""}, cfg:{}, included:new Set() };
 ORDER.forEach(pid=>{ const p=PRODUCTS[pid]; state.cfg[pid]={ tier:p.tiers[p.defaultTier].id, units:p.default, addons:new Set() }; });
 function P(){ return PRODUCTS[state.product]; }
 function CFG(){ return state.cfg[state.product]; }
@@ -575,6 +576,7 @@ document.getElementById("custContact").addEventListener("input",e=>{ state.cust.
 document.getElementById("custEmail").addEventListener("input",e=>{ state.cust.email=e.target.value; });
 document.getElementById("custPhone").addEventListener("input",e=>{ state.cust.phone=e.target.value; });
 document.getElementById("custAddr").addEventListener("input",e=>{ state.cust.address=e.target.value; });
+document.getElementById("custNotes").addEventListener("input",e=>{ state.cust.notes=e.target.value; });
 document.getElementById("includeToggle").addEventListener("change",e=>{ e.target.checked?state.included.add(state.product):state.included.delete(state.product); render(); });
 document.getElementById("savepdf").addEventListener("click",()=>{ buildQuote(); window.print(); });
 window.addEventListener("beforeprint", buildQuote);
@@ -587,6 +589,7 @@ function syncControls(){
   document.getElementById("custEmail").value=state.cust.email||"";
   document.getElementById("custPhone").value=state.cust.phone||"";
   document.getElementById("custAddr").value=state.cust.address||"";
+  document.getElementById("custNotes").value=state.cust.notes||"";
   document.querySelectorAll("#cycle button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.cycle===state.cycle));
   document.querySelectorAll("[data-add]").forEach(cb=>{ cb.checked=c.addons.has(cb.dataset.add); });
   document.getElementById("includeToggle").checked=state.included.has(state.product);
@@ -751,10 +754,10 @@ async function saveToFinance(){
   try{
     const name=state.client.trim()||"(unnamed customer)";
     let customer_id=null;
-    const cust={ company_name:name, agent_id:(AGENT&&AGENT.id)||null, contact_person:(state.cust.contact||"").trim()||null, email:(state.cust.email||"").trim()||null, phone:(state.cust.phone||"").trim()||null, address:(state.cust.address||"").trim()||null };
+    const cust={ company_name:name, agent_id:(AGENT&&AGENT.id)||null, contact_person:(state.cust.contact||"").trim()||null, email:(state.cust.email||"").trim()||null, phone:(state.cust.phone||"").trim()||null, address:(state.cust.address||"").trim()||null, notes:(state.cust.notes||"").trim()||null };
     const r1=await sb.from("customers").select("id").ilike("company_name",name).maybeSingle();
-    if(r1.data){ customer_id=r1.data.id; await sb.from("customers").update(cust).eq("id",customer_id); }
-    else { const r2=await sb.from("customers").insert(cust).select("id").single(); if(r2.error) throw r2.error; customer_id=r2.data.id; }
+    if(r1.data){ customer_id=r1.data.id; await sb.from("customers").update(cust).eq("id",customer_id); await sb.from("customers").update({stage:"quotation"}).eq("id",customer_id).eq("stage","presentation"); }
+    else { const r2=await sb.from("customers").insert({...cust, stage:"quotation"}).select("id").single(); if(r2.error) throw r2.error; customer_id=r2.data.id; }
     const lines=quoteLines(all);
     const subtotal=round2(lines.reduce((s,l)=>s+l.line_total,0));
     const tax_pct=cfg.TAX_PCT||8, tax_amount=round2(subtotal*tax_pct/100), total=round2(subtotal+tax_amount);
