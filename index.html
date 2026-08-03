@@ -302,15 +302,6 @@
         <button data-cycle="annual" aria-pressed="false">Annual <span class="save">2 months free</span></button>
       </div>
     </div>
-    <div class="field">
-      <label>Currency</label>
-      <div class="cur"><select id="cur">
-        <option value="RM|MYR" selected>RM (MYR)</option>
-        <option value="S$|SGD">S$ (SGD)</option>
-        <option value="$|USD">$ (USD)</option>
-        <option value="Rp|IDR">Rp (IDR)</option>
-      </select></div>
-    </div>
     <div class="field" style="flex:1; min-width:190px;">
       <label>Prepared for</label>
       <input id="clientname" class="agencyinput" type="text" placeholder="Customer name (for the quote)" autocomplete="off">
@@ -340,8 +331,9 @@
   <div class="summary">
     <div class="plan">Quotation: <b id="s-included">—</b> · <b id="s-cycle">Monthly</b></div>
     <div class="sumnums">
-      <div class="blk"><div class="k" id="rk">Per month</div><div class="v" id="s-recurring">—</div></div>
-      <div class="blk hero"><div class="k" id="ck">Billed now</div><div class="v" id="s-billed">—</div></div>
+      <div class="blk"><div class="k">Subtotal</div><div class="v" id="s-sub">—</div></div>
+      <div class="blk"><div class="k">SST 8%</div><div class="v" id="s-sst">—</div></div>
+      <div class="blk hero"><div class="k">Total</div><div class="v" id="s-total">—</div></div>
     </div>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
       <button class="pdfbtn ghost" id="savequote" type="button"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 3h7l3 3v7H3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 3v3h5" stroke="currentColor" stroke-width="1.5"/></svg> Save to Finance</button>
@@ -414,6 +406,7 @@ const PRODUCTS={"sales": {"name": "Sales Platform", "unit": "agent", "unitp": "a
 const ORDER=["sales", "school", "hrms"];
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
+const TAX_PCT=8;
 const CHECK='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 4L6 12L3 9" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const PAYMENT_STAGES=[{label:"Upon confirmation",pct:10},{label:"Upon 1st draft completed",pct:40},{label:"Balance upon delivery",pct:50}];
 
@@ -426,6 +419,7 @@ function activeIds(){ return state.included.size? ORDER.filter(id=>state.include
 function fx(){ return RATES[state.cur.split("|")[1]]||1; }
 function sym(){ return state.cur.split("|")[0]; }
 function fmt(v){ return sym()+" "+Math.round(v).toLocaleString(undefined,{maximumFractionDigits:0}); }
+function fmt2(v){ return sym()+" "+Number(v||0).toLocaleString("en-MY",{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function rateStr(v){ return (v%1?v.toFixed(2):Math.round(v).toLocaleString()); }
 function tierOf(pid,id){ return PRODUCTS[pid].tiers.find(t=>t.id===id); }
 function bandMultFor(pid,u){ const b=PRODUCTS[pid].bands; if(!b.length) return 1; for(const x of b){ if(x.upTo===null||u<=x.upTo) return x.mult; } return 1; }
@@ -503,7 +497,6 @@ const range=document.getElementById("range"), unitnum=document.getElementById("u
 range.addEventListener("input",()=>{ CFG().units=+range.value; render(); });
 unitnum.addEventListener("input",()=>{ CFG().units=Math.max(1,+unitnum.value||1); render(); });
 document.getElementById("cycle").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b)return; state.cycle=b.dataset.cycle; render(); });
-document.getElementById("cur").addEventListener("change",e=>{ state.cur=e.target.value; render(); });
 document.getElementById("clientname").addEventListener("input",e=>{ state.client=e.target.value; });
 document.getElementById("includeToggle").addEventListener("change",e=>{ e.target.checked?state.included.add(state.product):state.included.delete(state.product); render(); });
 document.getElementById("savepdf").addEventListener("click",()=>{ buildQuote(); window.print(); });
@@ -512,7 +505,6 @@ window.addEventListener("beforeprint", buildQuote);
 function syncControls(){
   const c=CFG();
   range.value=c.units; unitnum.value=c.units;
-  document.getElementById("cur").value=state.cur;
   document.getElementById("clientname").value=state.client;
   document.querySelectorAll("#cycle button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.cycle===state.cycle));
   document.querySelectorAll("[data-add]").forEach(cb=>{ cb.checked=c.addons.has(cb.dataset.add); });
@@ -563,10 +555,10 @@ function render(){
   document.getElementById("includeName").textContent=p.name;
   document.getElementById("prodSub").textContent=`This product — ${p.name}: ${fmt(one.annual?one.recurringTotal:one.monthlyRecurring)}${one.annual?"/yr":"/mo"}${(one.once+one.yr)?` + ${fmt(one.once+one.yr)} now`:""}`;
   const all=calcAll();
-  document.getElementById("rk").textContent=all.annual?"Per year":"Per month";
-  document.getElementById("ck").textContent="One-time total";
-  document.getElementById("s-recurring").textContent=fmt(all.annual?all.recurringTotal:all.monthlyRecurring);
-  document.getElementById("s-billed").textContent=fmt(all.once);
+  const sub=all.billedNow, sst=sub*TAX_PCT/100, tot=sub+sst;
+  document.getElementById("s-sub").textContent=fmt2(sub);
+  document.getElementById("s-sst").textContent=fmt2(sst);
+  document.getElementById("s-total").textContent=fmt2(tot);
   document.getElementById("s-included").textContent=all.ids.map(id=>PRODUCTS[id].name).join(" + ")+(state.included.size?"":" (current)");
   document.getElementById("s-cycle").textContent=all.annual?"Annual":"Monthly";
   document.querySelectorAll("#cycle button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.cycle===state.cycle));
@@ -627,12 +619,10 @@ function buildQuote(){
     c.addOnce.forEach(a=>rows.push(`<tr><td>+ ${a.name}</td><td class="r">one-time</td><td class="r">${fmt(a.amt)}</td></tr>`));
   });
   document.getElementById("qs-body").innerHTML=rows.join("");
-  const foot=[];
-  foot.push(`<tr><td>Recurring subtotal (${all.annual?"per year":"per month"})</td><td></td><td class="r">${fmt(all.recurringTotal)}</td></tr>`);
-  if(all.yr) foot.push(`<tr><td>Yearly services</td><td></td><td class="r">${fmt(all.yr)}/yr</td></tr>`);
-  if(all.once) foot.push(`<tr><td>One-time fees</td><td></td><td class="r">${fmt(all.once)}</td></tr>`);
-  foot.push(`<tr class="total"><td>Total billed now</td><td></td><td class="r">${fmt(all.billedNow)}</td></tr>`);
-  if(!all.annual) foot.push(`<tr><td colspan="2" style="color:#888">Then recurring each month</td><td class="r" style="color:#888">${fmt(all.monthlyRecurring)}</td></tr>`);
+  const foot=[]; const qSub=all.billedNow, qSst=qSub*TAX_PCT/100, qTot=qSub+qSst;
+  foot.push(`<tr><td>Subtotal</td><td></td><td class="r">${fmt2(qSub)}</td></tr>`);
+  foot.push(`<tr><td>SST (${TAX_PCT}%)</td><td></td><td class="r">${fmt2(qSst)}</td></tr>`);
+  foot.push(`<tr class="total"><td>Total</td><td></td><td class="r">${fmt2(qTot)}</td></tr>`);
   document.getElementById("qs-foot").innerHTML=foot.join("");
   const pay=[];
   if(all.onceProj>0){ pay.push(`<tr class="grp"><td colspan="2">Payment schedule — implementation (${fmt(all.onceProj)})</td></tr>`);
