@@ -796,7 +796,7 @@ async function viewSavedQuote(id){
   const r=await sb.from("quotation_items").select("description,qty,unit_price,line_total").eq("quotation_id",id);
   const m=v=>(cfg.CURRENCY_SYMBOL||"RM")+" "+Number(v||0).toLocaleString("en-MY",{minimumFractionDigits:2,maximumFractionDigits:2});
   const rows=(r.data||[]).map(it=>`<tr><td>${(it.description||"").replace(/</g,"&lt;")}</td><td class="r">${it.qty}</td><td class="r">${m(it.unit_price)}</td><td class="r">${m(it.line_total)}</td></tr>`).join("");
-  b.innerHTML=`<button class="pdfbtn ghost" id="qvBack" style="margin-bottom:14px">← Back</button>
+  b.innerHTML=`<button class="pdfbtn ghost" id="qvBack" style="margin-bottom:14px">← Back</button> <button class="pdfbtn ghost" id="qvDel" style="margin-bottom:14px;color:#d5514e;border-color:#d5514e">Delete</button>
     <div style="font-size:18px;font-weight:800;color:var(--ink)">${q.quote_no||"(draft)"}</div>
     <div style="color:var(--ink-faint);font-size:12.5px;margin-bottom:12px">${(q.customers&&q.customers.company_name)||"—"} · ${q.status} · issued ${q.issue_date||""}${q.valid_until?" · valid to "+q.valid_until:""}</div>
     <table class="qv-table"><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Unit</th><th class="r">Amount</th></tr></thead><tbody>${rows}</tbody>
@@ -807,6 +807,7 @@ async function viewSavedQuote(id){
     </tfoot></table>
     ${q.notes?`<div class="qv-notes">${q.notes.replace(/</g,"&lt;").replace(/\n/g,"<br>")}</div>`:""}`;
   document.getElementById("qvBack").addEventListener("click",renderSavedList);
+  document.getElementById("qvDel").addEventListener("click",async ()=>{ if(!confirm("Delete this quotation? This cannot be undone."))return; const r=await sb.from("quotations").delete().eq("id",id); if(r.error){ toast(r.error.message,true); return; } toast("Quotation deleted"); await loadRemote(); });
 }
 const savedModal=document.getElementById("savedModal");
 function openSaved(){ renderSavedList(); savedModal.classList.add("open"); document.body.classList.add("locked"); }
