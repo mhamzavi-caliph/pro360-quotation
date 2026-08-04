@@ -315,6 +315,7 @@
     <p class="l-sub">Choose a product to start — or reopen a saved quotation. You can combine more than one product into a single quote.</p>
     <div class="l-tiles" id="lTiles"></div>
     <button class="l-saved" id="landingSaved"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h7l3 3v7H3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5 3v3h5" stroke="currentColor" stroke-width="1.4"/></svg> Saved quotes (<span id="savedCountL">0</span>)</button>
+    <button class="l-saved" id="landingLogout" style="margin-left:10px"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Sign out</button>
   </div>
 </div>
 
@@ -903,6 +904,7 @@ function setupAuth(){
 }
 document.getElementById("homeBtn").addEventListener("click",showLanding);
 document.getElementById("landingSaved").addEventListener("click",openSaved);
+document.getElementById("landingLogout").addEventListener("click", async ()=>{ if(sb) await sb.auth.signOut(); boot(null); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&savedModal.classList.contains("open"))closeSaved(); });
 
 buildLandingTiles();
