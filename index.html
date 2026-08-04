@@ -568,6 +568,42 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
   {id:"isolation",name:"Dedicated hosting (isolated database)",desc:"Physical data isolation",price:3600},
   {id:"sla",name:"Priority support & SLA",desc:"Same-day response",price:3600}]}
 ]};
+(function(){
+  // per-head ANNUAL rate (RM/head/yr) for each module, used when basis = per head
+  const H={core:48,dash:30,branch:30,mobile:24,lead:30,crm:24,comm:48,quote:30,target:18,gps:30,activity:24,eform:24,inv:36,book:30,task:30,emp:30,payroll:60,appraisal:30,pay:36,acct:30,sub:30,api:72,wa:30,game:24,portal:30,domain:12,isolation:48,sla:48};
+  const F={
+   core:["Role-based permissions (admin → user)","Secure login & sessions","Admin console & settings","User & team management"],
+   dash:["Custom KPI cards & charts","Filter by date / branch / team","Export to Excel / PDF","Role-specific views"],
+   branch:["Unlimited branches / companies","Per-branch data separation","Cross-branch roll-up reports","Branch switcher"],
+   mobile:["Works on any phone browser","Installable web app (PWA)","Responsive layouts","Offline-friendly forms"],
+   lead:["Capture leads from forms","Assign & reassign owners","Custom pipeline stages","Follow-up reminders"],
+   crm:["Customer profiles & history","Notes & interaction log","Tags & segments","Search & filters"],
+   comm:["Configurable commission schemes","Override / downline payouts","Auto statements per agent","Approval & payout tracking"],
+   quote:["Branded quotations","Convert quote → invoice","Line items & SST","PDF export"],
+   target:["Set targets per person / team","Target vs achievement","Leaderboard","Progress alerts"],
+   gps:["Geofenced clock-in / out","Live location stamp","Attendance records","Late / early flags"],
+   activity:["Log field visits","GPS-stamped activities","Photo / note attachments","Daily activity dashboard"],
+   eform:["Custom form builder","Document vault & storage","e-signature ready","Submission tracking"],
+   inv:["Item catalogue","Stock in / out movements","Low-stock alerts","Stock valuation"],
+   book:["Appointments & calendar","Resource / staff scheduling","Customer self-booking","Reminders"],
+   task:["Task assignments","Project boards","Approvals & sign-off","Due-date tracking"],
+   emp:["Employee records & profiles","Leave apply / approve","Expense claims","Self-service portal"],
+   payroll:["EPF / SOCSO / EIS / PCB","Monthly & bonus pay runs","Branded payslips (EA)","Bank & statutory files"],
+   appraisal:["Review cycles","Criteria ratings & goals","Self → manager flow","Overall scoring"],
+   pay:["FPX / DuitNow / card","Online payment links","Auto reconciliation","Receipts"],
+   acct:["GL journal export","Statements & ledgers","Tax reports","Accounting integration"],
+   sub:["Recurring billing","Auto-invoicing","Renewal reminders","Overdue / dunning"],
+   api:["Connect external / HQ systems","Webhooks & API","Two-way data sync","Custom endpoints"],
+   wa:["WhatsApp broadcast","Automated alerts","Message templates","Delivery tracking"],
+   game:["Points & badges","Leaderboards","Reward store","Challenges"],
+   portal:["Member / customer login","Self-service actions","Announcements","Document access"],
+   domain:["Your own domain","Full brand theme","Custom logo & colours","Branded emails"],
+   isolation:["Dedicated database","Physical data isolation","Encrypted tenant keys","Audit-ready"],
+   sla:["Same-day response","Priority queue","Dedicated contact","Uptime SLA"]
+  };
+  PRODUCTS.custom.headMin={staff:20,student:50};
+  PRODUCTS.custom.groups.forEach(g=>g.items.forEach(m=>{ m.head=H[m.id]||Math.round(m.price/80); m.features=F[m.id]||[m.desc]; }));
+})();
 const ORDER=["sales", "school", "hrms", "custom"];
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
@@ -576,7 +612,7 @@ const CHECK='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d
 const PAYMENT_STAGES=[{label:"Upon confirmation",pct:10},{label:"Upon 1st draft completed",pct:40},{label:"Balance upon delivery",pct:50}];
 
 let state={ product:ORDER[0], cycle:"monthly", cur:"RM|MYR", client:"", agent:"", cust:{contact:"",email:"",phone:"",address:"",notes:""}, cfg:{}, included:new Set() };
-ORDER.forEach(pid=>{ const p=PRODUCTS[pid]; state.cfg[pid]= p.custom ? { picked:new Set(), setup:true } : { tier:p.tiers[p.defaultTier].id, units:p.default, addons:new Set() }; });
+ORDER.forEach(pid=>{ const p=PRODUCTS[pid]; state.cfg[pid]= p.custom ? { picked:new Set(), setup:true, basis:"flat", headType:"staff", heads:20 } : { tier:p.tiers[p.defaultTier].id, units:p.default, addons:new Set() }; });
 function P(){ return PRODUCTS[state.product]; }
 function CFG(){ return state.cfg[state.product]; }
 function activeIds(){ return state.included.size? ORDER.filter(id=>state.included.has(id)) : [state.product]; }
@@ -630,20 +666,41 @@ function ensureModStyles(){
   .modrow .modinfo b{display:block;font-size:14px;color:var(--ink,inherit)}
   .modrow .modinfo small{display:block;font-size:12px;color:var(--ink-faint,#8a97a0);margin-top:2px}
   .modrow .modcost{flex:none;font-weight:800;font-size:13.5px;color:var(--gold,#e6b84b);white-space:nowrap}
-  .modrow:has(input:checked){border-color:var(--gold,#e6b84b);background:rgba(230,184,75,.08)}`;
+  .modrow:has(input:checked){border-color:var(--gold,#e6b84b);background:rgba(230,184,75,.08)}
+  .moditem{margin-bottom:9px} .moditem .modrow{margin-bottom:0}
+  .modfeat{display:none;padding:4px 15px 12px 49px}
+  .modfeat ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
+  .modfeat li{font-size:12px;color:var(--ink-faint,#8a97a0);position:relative;padding-left:14px}
+  .modfeat li:before{content:"\\2713";position:absolute;left:0;color:var(--gold,#e6b84b);font-weight:800}
+  .modbasis{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:2px 0 16px}
+  .modheads{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .modheads select,.modheads input{font:inherit;font-size:13px;font-weight:600;padding:8px 10px;border-radius:9px;border:1px solid var(--line,#28323a);background:var(--panel,#fff);color:var(--ink,inherit)}
+  .modheads input{width:82px;text-align:right}
+  .modheads-u{font-size:12.5px;color:var(--ink-faint,#8a97a0);font-weight:600}
+  @media(max-width:600px){ .modfeat ul{grid-template-columns:1fr} .modfeat{padding-left:44px} }`;
   document.head.appendChild(s);
 }
 function buildModules(){
   ensureModStyles();
   const p=P(), el=document.getElementById("tiers"); el.className="modwrap";
-  let html=`<div class="modnote">Tick the modules the customer needs — the annual price updates as you go. Custom builds are <b>licensed yearly</b>.</div>`;
+  let html=`<div class="modnote">Tick the modules the customer needs — features appear on tick, and the price updates as you go. Custom builds are <b>licensed yearly</b>.</div>`;
+  html+=`<div class="modbasis"><div class="toggle" id="custBasis">
+      <button type="button" data-basis="flat" aria-pressed="true">Flat annual</button>
+      <button type="button" data-basis="perhead" aria-pressed="false">Per head</button></div>
+    <div class="modheads" id="modHeads" style="display:none">
+      <select id="headType"><option value="staff">Staff (min 20)</option><option value="student">Students (min 50)</option></select>
+      <input type="number" id="headCount" min="20" value="20"><span class="modheads-u" id="headUnit">staff · min 20</span>
+    </div></div>`;
   p.groups.forEach(g=>{ html+=`<div class="modgroup"><h4>${g.h}</h4>`;
-    g.items.forEach(m=>{ html+=`<label class="modrow"><input type="checkbox" data-mod="${m.id}"><span class="modfake"></span><span class="modinfo"><b>${m.name}</b><small>${m.desc}</small></span><span class="modcost" data-modcost="${m.id}"></span></label>`; });
+    g.items.forEach(m=>{ html+=`<div class="moditem"><label class="modrow"><input type="checkbox" data-mod="${m.id}"><span class="modfake"></span><span class="modinfo"><b>${m.name}</b><small>${m.desc}</small></span><span class="modcost" data-modcost="${m.id}"></span></label><div class="modfeat" data-modfeat="${m.id}"><ul>${(m.features||[]).map(f=>`<li>${f}</li>`).join("")}</ul></div></div>`; });
     html+=`</div>`; });
-  html+=`<div class="modgroup"><h4>One-time</h4><label class="modrow"><input type="checkbox" id="setupChk" data-setup><span class="modfake"></span><span class="modinfo"><b>${p.setup.name}</b><small>Charged once, before delivery (10% / 40% / balance)</small></span><span class="modcost" data-setupcost></span></label></div>`;
+  html+=`<div class="modgroup"><h4>One-time</h4><div class="moditem"><label class="modrow"><input type="checkbox" id="setupChk" data-setup><span class="modfake"></span><span class="modinfo"><b>${p.setup.name}</b><small>Charged once, before delivery (10% / 40% / balance)</small></span><span class="modcost" data-setupcost></span></label></div></div>`;
   el.innerHTML=html;
   el.querySelectorAll("[data-mod]").forEach(cb=>cb.addEventListener("change",()=>{ cb.checked?CFG().picked.add(cb.dataset.mod):CFG().picked.delete(cb.dataset.mod); render(); }));
   const sc=el.querySelector("[data-setup]"); if(sc) sc.addEventListener("change",()=>{ CFG().setup=sc.checked; render(); });
+  el.querySelectorAll("#custBasis button").forEach(b=>b.addEventListener("click",()=>{ CFG().basis=b.dataset.basis; render(); }));
+  const ht=el.querySelector("#headType"); if(ht) ht.addEventListener("change",()=>{ CFG().headType=ht.value; const mn=(p.headMin&&p.headMin[ht.value])||20; if((+CFG().heads||0)<mn) CFG().heads=mn; render(); });
+  const hc=el.querySelector("#headCount"); if(hc) hc.addEventListener("input",()=>{ CFG().heads=Math.max(1,+hc.value||1); render(); });
 }
 function findMod(p,id){ for(const g of p.groups){ for(const m of g.items){ if(m.id===id) return m; } } return null; }
 function applyProduct(pid){
@@ -654,7 +711,7 @@ function applyProduct(pid){
   document.getElementById("subline").textContent=p.subline;
   setCustomUI(!!p.custom);
   if(p.custom){ state.included.clear(); state.cycle="annual"; buildModules();
-    document.getElementById("fineprint").innerHTML=`<h4>How custom pricing works</h4><ul><li><b>Tick only what the customer needs</b> — the annual price updates instantly.</li><li><b>Licensed yearly.</b> Each module is an annual licence; there is no monthly option for custom builds.</li><li><b>Minimum ${fmt((p.minAnnual||0)*fx())}/year</b> for a custom build.</li><li><b>Setup, delivery &amp; onboarding</b> is billed once (10% on confirmation / 40% on 1st draft / balance on delivery).</li><li><b>Need something not listed?</b> Note it in the customer details and we'll scope it.</li></ul>`;
+    document.getElementById("fineprint").innerHTML=`<h4>How custom pricing works</h4><ul><li><b>Tick only what the customer needs</b> — features appear as you tick, and the price updates instantly.</li><li><b>Two ways to price:</b> <b>Flat annual</b> (fixed yearly licence, min ${fmt((p.minAnnual||0)*fx())}/yr) or <b>Per head</b> (per staff / student · min 20 staff / 50 students).</li><li><b>Licensed yearly.</b> No monthly option for custom builds.</li><li><b>Setup, delivery &amp; onboarding</b> is billed once (10% on confirmation / 40% on 1st draft / balance on delivery).</li><li><b>Need something not listed?</b> Note it in the customer details and we'll scope it.</li></ul>`;
     return; }
   document.getElementById("unitword").textContent=p.unitp;
   const r=document.getElementById("range"); r.min=p.min; r.max=p.max; r.step=p.step;
@@ -735,11 +792,19 @@ function syncControls(){
 function calcOne(pid){
   const p=PRODUCTS[pid], c=state.cfg[pid], rate=fx();
   if(p.custom){
-    const items=[]; let raw=0;
-    p.groups.forEach(g=>g.items.forEach(m=>{ if(c.picked.has(m.id)){ const amt=m.price*rate; raw+=amt; items.push({id:m.id,name:m.name,amt}); } }));
-    const floorAmt=(p.minAnnual||0)*rate, floored=raw>0&&raw<floorAmt, annualLic=floored?floorAmt:raw;
+    const perHead=c.basis==="perhead";
+    const minH=(p.headMin&&p.headMin[c.headType])||20;
+    const heads=Math.max(minH, +c.heads||minH), headFloored=perHead&&(+c.heads||0)<minH;
+    const items=[]; let rawFlat=0, rawHeadRate=0;
+    p.groups.forEach(g=>g.items.forEach(m=>{ if(c.picked.has(m.id)){
+      const amt=(perHead?(m.head*heads):m.price)*rate;
+      rawFlat+=m.price*rate; rawHeadRate+=m.head*rate;
+      items.push({id:m.id,name:m.name,amt,headRate:m.head*rate,flat:m.price*rate}); } }));
+    let annualLic, floored=false;
+    if(perHead){ annualLic=rawHeadRate*heads; }
+    else { const floorAmt=(p.minAnnual||0)*rate; floored=rawFlat>0&&rawFlat<floorAmt; annualLic=floored?floorAmt:rawFlat; }
     const setup=c.setup?(p.setup.cost*rate):0;
-    return {p,custom:true,items,t:{name:"Custom build"},annualLic,rawModules:raw,billUnits:0,mult:1,perUnit:0,seats:annualLic,rec:0,once:setup,onceProj:setup,oncePost:0,yr:0,addOn:[],addOnce:[],addYear:[],monthlyRecurring:annualLic/12,seatsBilled:annualLic,recurringTotal:annualLic,billedNow:annualLic+setup,floored,annual:true};
+    return {p,custom:true,perHead,heads,minH,headFloored,headType:c.headType,items,t:{name:"Custom build"},annualLic,rawModules:perHead?annualLic:rawFlat,rawHeadRate,billUnits:0,mult:1,perUnit:0,seats:annualLic,rec:0,once:setup,onceProj:setup,oncePost:0,yr:0,addOn:[],addOnce:[],addYear:[],monthlyRecurring:annualLic/12,seatsBilled:annualLic,recurringTotal:annualLic,billedNow:annualLic+setup,floored,annual:true};
   }
   const billUnits=Math.max(p.min, c.units), t=tierOf(pid,c.tier);
   const mult=bandMultFor(pid,billUnits), perUnit=t.price*rate*mult;
@@ -761,9 +826,15 @@ function calcAll(){
 }
 
 function renderCustom(){
-  const p=P(), c=CFG(), one=calcOne(state.product);
-  document.querySelectorAll("[data-modcost]").forEach(s=>{ const m=findMod(p,s.dataset.modcost); if(m) s.textContent=fmt(m.price*fx())+"/yr"; });
+  const p=P(), c=CFG(), one=calcOne(state.product), perHead=one.perHead;
+  document.querySelectorAll("#custBasis button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.basis===c.basis));
+  const mh=document.getElementById("modHeads"); if(mh) mh.style.display=perHead?"flex":"none";
+  const ht=document.getElementById("headType"); if(ht) ht.value=c.headType;
+  const hc=document.getElementById("headCount"); if(hc){ hc.min=one.minH; if(document.activeElement!==hc) hc.value=c.heads; }
+  const hu=document.getElementById("headUnit"); if(hu) hu.textContent=(c.headType==="student"?"students":"staff")+" · min "+one.minH;
+  document.querySelectorAll("[data-modcost]").forEach(s=>{ const m=findMod(p,s.dataset.modcost); if(m) s.textContent=perHead?(fmt(m.head*fx())+"/head/yr"):(fmt(m.price*fx())+"/yr"); });
   document.querySelectorAll("[data-mod]").forEach(cb=>{ cb.checked=c.picked.has(cb.dataset.mod); });
+  document.querySelectorAll("[data-modfeat]").forEach(fd=>{ fd.style.display=c.picked.has(fd.dataset.modfeat)?"block":"none"; });
   const sc=document.getElementById("setupChk"); if(sc) sc.checked=!!c.setup;
   const scc=document.querySelector("[data-setupcost]"); if(scc) scc.textContent=fmt(p.setup.cost*fx());
   document.getElementById("prodSub").textContent="";
@@ -771,10 +842,11 @@ function renderCustom(){
   document.getElementById("s-sub").textContent=fmt2(sub);
   document.getElementById("s-sst").textContent=fmt2(sst);
   document.getElementById("s-total").textContent=fmt2(tot);
-  document.getElementById("s-included").textContent=p.name+" · "+c.picked.size+" module"+(c.picked.size===1?"":"s");
+  document.getElementById("s-included").textContent=p.name+" · "+c.picked.size+" module"+(c.picked.size===1?"":"s")+(perHead?" · "+one.heads+" "+(c.headType==="student"?"students":"staff"):"");
   document.getElementById("s-cycle").textContent="Annual";
-  let note=`Custom build — ${fmt(one.annualLic)}/year licence for ${c.picked.size} module${c.picked.size===1?"":"s"}.`;
-  if(one.floored) note+=` Minimum ${fmt((p.minAnnual||0)*fx())}/year applied.`;
+  let note;
+  if(perHead){ note=`Custom build — ${fmt(one.rawHeadRate)}/head/year × ${one.heads} ${c.headType==="student"?"students":"staff"} = ${fmt(one.annualLic)}/year.`; if(one.headFloored) note+=` Minimum ${one.minH} enforced.`; }
+  else { note=`Custom build — ${fmt(one.annualLic)}/year licence for ${c.picked.size} module${c.picked.size===1?"":"s"}.`; if(one.floored) note+=` Minimum ${fmt((p.minAnnual||0)*fx())}/year applied.`; }
   if(one.once) note+=` One-time setup ${fmt(one.once)} (staged).`;
   document.getElementById("s-setup").textContent=note;
   renderPayPlan(calcAll());
@@ -921,8 +993,8 @@ function buildQuote(){
   all.ids.forEach(pid=>{
     const c=calcOne(pid), p=PRODUCTS[pid];
     if(c.custom){
-      rows.push(`<tr class="grp"><td colspan="3">${p.name} · annual licence</td></tr>`);
-      c.items.forEach(m=>rows.push(`<tr><td>${m.name}</td><td class="r">annual licence</td><td class="r">${fmt(m.amt)}/yr</td></tr>`));
+      rows.push(`<tr class="grp"><td colspan="3">${p.name} · annual licence${c.perHead?" · "+c.heads+" "+(c.headType==="student"?"students":"staff"):""}</td></tr>`);
+      c.items.forEach(m=>rows.push(`<tr><td>${m.name}</td><td class="r">${c.perHead?fmt(m.headRate)+"/head × "+c.heads:"annual licence"}</td><td class="r">${fmt(m.amt)}/yr</td></tr>`));
       if(c.floored) rows.push(`<tr><td>Minimum annual licence adjustment</td><td class="r"></td><td class="r">${fmt(c.annualLic-c.rawModules)}</td></tr>`);
       if(c.once) rows.push(`<tr><td>${p.setup.name}</td><td class="r">one-time</td><td class="r">${fmt(c.once)}</td></tr>`);
       return;
@@ -968,7 +1040,7 @@ function quoteLines(all){
   const lines=[];
   all.ids.forEach(pid=>{ const c=calcOne(pid), p=PRODUCTS[pid], cyc=all.annual?"annual":"monthly";
     if(c.custom){
-      c.items.forEach(m=>lines.push({ sku:("QS-CUSTOM-"+m.id).toUpperCase(), description:`Custom Build · ${m.name} (annual licence)`, qty:1, unit_price:round2(m.amt), line_total:round2(m.amt) }));
+      c.items.forEach(m=>lines.push({ sku:("QS-CUSTOM-"+m.id).toUpperCase(), description:`Custom Build · ${m.name} (${c.perHead?fmt(m.headRate)+"/head/yr × "+c.heads:"annual licence"})`, qty:1, unit_price:round2(m.amt), line_total:round2(m.amt) }));
       if(c.floored){ const adj=round2(c.annualLic-c.rawModules); if(adj>0) lines.push({ description:`Custom Build · minimum annual licence adjustment`, qty:1, unit_price:adj, line_total:adj }); }
       if(c.once) lines.push({ description:`Custom Build · ${p.setup.name} (one-time)`, qty:1, unit_price:round2(c.once), line_total:round2(c.once) });
       return;
@@ -985,9 +1057,9 @@ function quoteNotes(all){
   const L=[];
   const cId=all.ids.find(id=>PRODUCTS[id].custom);
   if(cId){ const c=calcOne(cId);
-    L.push("Custom Build — annual licence");
+    L.push("Custom Build — "+(c.perHead?("per head · "+fmt(c.rawHeadRate)+"/head/yr × "+c.heads+" "+(c.headType==="student"?"students":"staff")):"annual licence"));
     L.push("Modules ("+c.items.length+"): "+(c.items.map(m=>m.name).join("; ")||"—"));
-    L.push("Annual licence: "+fmt(c.annualLic)+"/yr"+(c.floored?" (minimum applied)":""));
+    L.push("Annual total: "+fmt(c.annualLic)+"/yr"+(c.floored?" (min licence applied)":"")+(c.headFloored?" (min heads enforced)":""));
     if(c.once) L.push(P().setup.name+" "+fmt(c.once)+" — 10% on confirmation / 40% on 1st draft / balance on delivery");
     L.push("Prepared by: "+(state.agent||(AGENT&&AGENT.full_name)||""));
     return L.join("\n");
