@@ -653,6 +653,14 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
   PRODUCTS.custom.headMin={staff:20,student:50};
   PRODUCTS.custom.groups.forEach(g=>g.items.forEach(m=>{ if(m.head==null) m.head=H[m.id]||Math.round(m.price/80); if(!m.features) m.features=F[m.id]||[m.desc]; if(!m.types) m.types=T[m.id]||["sales","school","hrms"]; }));
 })();
+(function(){ // per-tier monthly minimum so higher plans have a higher floor (RM/month)
+  const HM={core:250,time:350,growth:450,performance:600,enterprise:800};
+  PRODUCTS.hrms.tiers.forEach(t=>{ if(HM[t.id]!=null) t.minMonthly=HM[t.id]; });
+  const SM={starter:399,growth:599,pro:799};
+  PRODUCTS.sales.tiers.forEach(t=>{ if(SM[t.id]!=null) t.minMonthly=SM[t.id]; });
+  const SC={starter:399,academic:599,engage:799,complete:999,group:1299};
+  PRODUCTS.school.tiers.forEach(t=>{ if(SC[t.id]!=null) t.minMonthly=SC[t.id]; });
+})();
 const ORDER=["sales", "school", "hrms", "custom"];
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
@@ -811,7 +819,7 @@ function buildFineprint(){
   document.getElementById("fineprint").innerHTML=`<h4>How pricing works</h4><ul>
     <li><b>Priced per ${p.unit} / month.</b> ${p.unitNote}</li>
     <li><b>Minimum ${p.min} ${p.unitp}</b> per account.</li>
-    ${p.minMonthly?`<li><b>Minimum ${fmt(p.minMonthly*fx())}/month</b> — smaller ${p.unitp} counts are charged this floor.</li>`:""}
+    ${p.minMonthly?`<li><b>Minimum from ${fmt(p.minMonthly*fx())}/month</b> — smaller ${p.unitp} counts are charged a monthly floor${p.tiers.some(t=>t.minMonthly!=null)?"; higher plans have a higher minimum":""}.</li>`:""}
     ${bandLi}
     <li><b>Customer taking more than one product?</b> Tick “Include … in this quotation” on each — the quote and totals combine them.</li>
     <li><b>Annual = pay 10 months, get 12</b> (~17% off).</li>
@@ -879,7 +887,7 @@ function calcOne(pid){
   }
   const billUnits=Math.max(p.min, c.units), t=tierOf(pid,c.tier);
   const mult=bandMultFor(pid,billUnits), perUnit=t.price*rate*mult;
-  let seats=perUnit*billUnits; const floorAmt=(p.minMonthly||0)*rate; const floored=seats<floorAmt; if(floored) seats=floorAmt;
+  let seats=perUnit*billUnits; const tierMin=(t.minMonthly!=null?t.minMonthly:(p.minMonthly||0)); const floorAmt=tierMin*rate; const floored=seats<floorAmt; if(floored) seats=floorAmt;
   let rec=0,once=0,onceProj=0,oncePost=0,yr=0; const addOn=[],addOnce=[],addYear=[];
   p.addons.forEach(a=>{ if(c.addons.has(a.id)){ const x=a.cost*rate;
     if(a.once){ once+=x; if(a.postDelivery){oncePost+=x;} else {onceProj+=x;} addOnce.push({name:a.name,amt:x,post:!!a.postDelivery});}
@@ -934,7 +942,7 @@ function render(){
     card.setAttribute("aria-pressed", t.id===c.tier);
     card.querySelector("[data-sym]").textContent=sym();
     card.querySelector("[data-amt]").textContent=rateStr(t.price*fx()*one.mult);
-    let ltm=t.price*fx()*one.mult*one.billUnits; const flr=(p.minMonthly||0)*fx(); const isMin=ltm<flr; if(isMin)ltm=flr;
+    let ltm=t.price*fx()*one.mult*one.billUnits; const flr=(t.minMonthly!=null?t.minMonthly:(p.minMonthly||0))*fx(); const isMin=ltm<flr; if(isMin)ltm=flr;
     card.querySelector("[data-lt]").textContent=`≈ ${fmt(ltm)}/mo${isMin?" · min":""}`;
     card.querySelector("[data-sel]").textContent=t.id===c.tier?"✓ Selected":"Select";
   });
