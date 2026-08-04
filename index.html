@@ -1,3 +1,6 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pro360 — Quotation System</title>
 <style>
   /* Pro360 Finance theme: sage canvas · white/cream cards · navy #14303e · gold #e6b84b */
@@ -274,6 +277,38 @@
   .saved-item .si-side { text-align:right; } .saved-item .si-total { display:block; font-weight:800; color:var(--gold-ink); font-variant-numeric:tabular-nums; } .saved-item .si-date { font-size:11px; color:var(--ink-faint); }
   .saved-item .si-acts { display:flex; gap:6px; } .saved-item .si-acts button { font:inherit; font-size:12px; font-weight:700; padding:6px 12px; border-radius:8px; border:1px solid var(--line); background:var(--panel); color:var(--accent-deep); cursor:pointer; } .saved-item .si-acts button:hover { border-color:var(--accent); } .saved-item .si-acts .del { color:#d5514e; } .saved-item .si-acts .del:hover { border-color:#d5514e; }
   @media (prefers-reduced-motion: reduce){ *{ transition:none!important; animation:none!important; } }
+  /* ---- Mobile / touch ---- */
+  @media (max-width:600px){
+    .wrap{ padding:18px 14px 132px; }
+    .brandbar{ gap:10px 12px; }
+    .brandbar .sys{ display:none; }
+    .bb-right{ gap:8px 10px; width:100%; justify-content:flex-start; }
+    .toolbtn{ padding:9px 12px; font-size:13px; }
+    .whoami{ order:-1; width:100%; }
+    .prodswitch{ width:100%; overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; }
+    .prodswitch button{ white-space:nowrap; }
+    .ctrls{ gap:12px; }
+    .units{ min-width:0; width:100%; }
+    .toggle{ width:100%; justify-content:center; }
+    .summary{ padding:14px 16px; gap:12px 16px; }
+    .summary .plan{ width:100%; }
+    .sumnums{ width:100%; margin-left:0; justify-content:space-between; gap:12px; }
+    .sumnums .blk .v{ font-size:21px; }
+    .summary > div[style]{ width:100%; }
+    .summary .pdfbtn{ flex:1; justify-content:center; min-height:46px; }
+    .modal{ padding:10px; }
+    .modal-head{ padding:20px 18px; }
+    .modal-body{ padding:18px; }
+    .modal-head .mp-name{ font-size:20px; }
+    .modrow{ flex-wrap:wrap; }
+    .modrow .modinfo{ flex:1 1 auto; }
+    .modrow .modcost{ width:100%; padding-left:34px; }
+  }
+  @media (max-width:380px){
+    .sumnums .blk .v{ font-size:19px; }
+    .l-tile{ padding:18px; }
+    .toolbtn{ padding:8px 10px; }
+  }
 </style>
 
 <div class="authgate" id="authgate">
