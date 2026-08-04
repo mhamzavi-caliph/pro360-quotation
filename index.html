@@ -478,7 +478,43 @@ const cfg=window.PRO360_CONFIG||{};
 const sb=(window.supabase&&cfg.SUPABASE_URL)?window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY):null;
 let AGENT=null, REMOTE=[];
 const PRODUCTS={"sales": {"name": "Sales Platform", "unit": "agent", "unitp": "agents", "min": 20, "max": 500, "step": 5, "default": 60, "defaultTier": 1, "minMonthly": 399, "headline": "Quote the Sales Platform", "unitNote": "Billed on active agents. Dormant agents don't count.", "subline": "Per-agent packages for takaful, health, direct-selling, academies and membership — the agency performance platform.", "bands": [], "tiers": [{"id": "starter", "name": "Starter", "tag": "The daily essentials to get selling fast.", "price": 8}, {"id": "growth", "name": "Growth", "tag": "For teams run on targets, training & commission.", "price": 15, "pop": "Most popular"}, {"id": "pro", "name": "Pro", "tag": "Full platform, integrations & differentiators.", "price": 25}], "details": {"starter": {"blurb": "The daily essentials — everything a team needs to start selling and reporting properly.", "groups": [{"h": "Setup & people", "items": ["Agency profile, branches & teams", "Role-based access (agent → admin)", "Member profiles, ranks & status", "Bulk import existing members", "Invite / self-registration", "Org hierarchy"]}, {"h": "Sales & activity", "items": ["Log sales from the field", "Product / plan catalogue", "Order & case status tracking", "Sales target vs achievement", "Daily activity log & targets", "Points / units per sale"]}, {"h": "Visibility & platform", "items": ["Agent & manager dashboards", "Announcements / broadcast", "Responsive web (any browser)", "Private, isolated data space"]}]}, "growth": {"blurb": "For organisations run on targets, training and commission — the plan most choose.", "inherits": "Starter", "groups": [{"h": "CRM & commission", "items": ["Lead capture & assignment", "8-stage pipeline + reminders", "Customer database & history", "Commission schemes & statements", "Contest / incentive tracking"]}, {"h": "Training & academy", "items": ["Course library & onboarding path", "Quizzes & assessments", "Training evaluation & effectiveness", "Progress tracking"]}, {"h": "Membership & meetings", "items": ["Member records & renewals", "Meetings + QR attendance", "Leaderboard & ranking", "Report export + notifications"]}]}, "pro": {"blurb": "The full platform — engagement, compliance and the integrations that connect to head office.", "inherits": "Growth", "groups": [{"h": "Engagement", "items": ["Gamification & rewards", "WhatsApp / chat", "Points / reward store"]}, {"h": "Documents & field", "items": ["e-Forms & document vault", "GPS clock-in & attendance (mobile web)", "GPS-stamped activity & field visits", "Override / downline commission", "After-sales service records"]}, {"h": "Integrations & governance", "items": ["HQ / principal / underwriter link", "Payment gateway", "Accounting export", "Audit log & custom domain"]}]}}, "addons": [{"id": "setup", "name": "Setup & onboarding", "desc": "Branding, data import, training", "cost": 3000, "once": true}, {"id": "website", "name": "Agency website — free design", "desc": "On your subdomain, e.g. agencyabc.pro360.technology", "cost": 30, "once": false}, {"id": "customsite", "name": "Custom-built website", "desc": "Bespoke design & build · billed yearly", "cost": 1500, "period": "year"}, {"id": "whatsapp", "name": "WhatsApp gateway", "desc": "Broadcast + alerts", "cost": 250, "once": false}, {"id": "integ", "name": "HQ / accounting integration", "desc": "One-time build", "cost": 6000, "once": true}, {"id": "support", "name": "Priority support & SLA", "desc": "Same-day response", "cost": 400, "once": false}, {"id": "training", "name": "Onsite launch training", "desc": "Half-day · after delivery", "cost": 1500, "once": true, "postDelivery": true}]}, "school": {"name": "School System", "unit": "student", "unitp": "students", "min": 100, "max": 2000, "step": 10, "default": 300, "defaultTier": 1, "minMonthly": 399, "headline": "Quote a school", "unitNote": "Billed on active enrolled students, with a volume discount as enrolment grows.", "subline": "Five packages for K–12 schools, priced per student with volume discounts for larger schools.", "bands": [{"upTo": 300, "mult": 1}, {"upTo": 800, "mult": 0.85}, {"upTo": 1500, "mult": 0.7}, {"upTo": null, "mult": 0.55}], "tiers": [{"id": "starter", "name": "Starter", "tag": "Get the school office digital: records, classes, attendance.", "price": 1.5}, {"id": "academic", "name": "Academic", "tag": "Add grades, exams, homework and full portals.", "price": 3, "pop": "Most popular"}, {"id": "engage", "name": "Engage", "tag": "School life: events, clubs, meals & leave workflows.", "price": 4.5}, {"id": "complete", "name": "Complete", "tag": "Everything for one campus, incl. online fee collection.", "price": 6}, {"id": "group", "name": "Group", "tag": "Multi-branch console for school groups & franchises.", "price": 8}], "details": {"starter": {"blurb": "The school office essentials — records, classes and attendance running in days.", "groups": [{"h": "School & people", "items": ["School profile & setup", "Student roster & profiles", "Guardian / parent records", "Teachers & classes", "Subjects & class assignment", "Admin dashboard"]}, {"h": "Attendance", "items": ["Teacher register (tap-to-mark)", "Present / late / absent", "School-wide analytics"]}, {"h": "Communication & portals", "items": ["Announcements (school-wide)", "Parent portal — attendance & news", "Student portal — basics", "Role-based access (6 roles)"]}]}, "academic": {"blurb": "Turn on academic tracking and open the portals to parents and students.", "inherits": "Starter", "groups": [{"h": "Gradebook & exams", "items": ["Teacher gradebook", "Exams & assessments", "Term scores & letter grades", "Per-subject performance"]}, {"h": "Homework", "items": ["Assignments / homework", "Submission & completion tracking", "Missing-work board"]}, {"h": "Parent engagement", "items": ["Teacher → parent comments", "Parent portal — full performance", "Student portal — performance", "Multi-child support"]}]}, "engage": {"blurb": "Everything that makes school life run — events, clubs, meals and daily workflows.", "inherits": "Academic", "groups": [{"h": "Events & co-curricular", "items": ["Events with registration & fees", "Clubs / co-curricular", "Enrolment & approval flow"]}, {"h": "Canteen", "items": ["Meal menu (breakfast/lunch)", "Parent meal pre-ordering", "Order & payment status"]}, {"h": "Daily workflows", "items": ["Absence requests & approval", "Early-collection requests", "Approval routing"]}]}, "complete": {"blurb": "The full single-campus platform — add online fee collection and finance.", "inherits": "Engage", "groups": [{"h": "Fees & billing", "items": ["Invoices per student", "Fee balances & statuses", "Online payments — FPX / DuitNow / card", "Cash & partial recording"]}, {"h": "Finance & reporting", "items": ["Finance dashboard & collection", "Overdue tracking", "Executive summary", "Printable reports"]}]}, "group": {"blurb": "For school groups and franchises running multiple campuses from one console.", "inherits": "Complete", "groups": [{"h": "Multi-branch", "items": ["Group / brand console", "Branch switcher", "Cross-branch summaries", "Org-wide announcements", "Compare campuses"]}, {"h": "Service", "items": ["Priority support & SLA", "Guided onboarding per branch", "Central oversight"]}]}}, "addons": [{"id": "setup", "name": "Setup & data migration", "desc": "Import students, staff, classes", "cost": 2500, "once": true}, {"id": "sms", "name": "SMS / WhatsApp notifications", "desc": "Alerts to parents", "cost": 150, "once": false}, {"id": "website", "name": "School website", "desc": "Hosted on yourschool.pro360.technology", "cost": 30, "once": false}, {"id": "customsite", "name": "Custom-built website", "desc": "Bespoke design & build · billed yearly", "cost": 1500, "period": "year"}, {"id": "training", "name": "Onsite staff training", "desc": "Half-day · after delivery", "cost": 1200, "once": true, "postDelivery": true}]}, "hrms": {"name": "HRMS & Payroll", "unit": "employee", "unitp": "employees", "min": 5, "max": 500, "step": 1, "default": 40, "defaultTier": 2, "minMonthly": 250, "headline": "Quote payroll", "unitNote": "Billed on active employees. Full EPF/SOCSO/EIS/PCB compliance built in.", "subline": "Five packages for Malaysian employers, priced per employee — statutory-compliant payroll to full HR suite.", "bands": [], "tiers": [{"id": "core", "name": "Core Payroll", "tag": "Statutory payroll, payslips, leave & claims.", "price": 6}, {"id": "time", "name": "Time", "tag": "Add GPS attendance and shift rostering.", "price": 10}, {"id": "growth", "name": "Growth", "tag": "Add analytics, onboarding & advanced tax.", "price": 14, "pop": "Most popular"}, {"id": "performance", "name": "Performance", "tag": "Add appraisals and the full HR cycle.", "price": 18}, {"id": "enterprise", "name": "Enterprise", "tag": "Everything, isolated hosting & priority SLA.", "price": 24}], "details": {"core": {"blurb": "Run compliant Malaysian payroll from day one — statutory, payslips, leave and claims.", "groups": [{"h": "Payroll & statutory", "items": ["Monthly & bonus pay runs", "EPF/KWSP · SOCSO · EIS · PCB", "HRDF & SKBBK (2026 rates)", "Zakat (tax-rebated)", "Loans / advances auto-deduct", "Allowances with statutory flags"]}, {"h": "Payslips & forms", "items": ["Branded PDF payslips (EA 1955)", "EA Form (C.P.8A) · CP8D", "Bank & statutory export files", "Accounting GL journal export"]}, {"h": "Leave & claims", "items": ["Leave apply / approve", "Leave policy engine (accrual, carry-forward)", "Manager approval routing", "Expense claims with receipts", "YTD reporting"]}, {"h": "People & self-service", "items": ["Employee records + bulk import", "Departments, designations, branches", "Company assets tracking", "Self-service portal", "Profile change approvals"]}]}, "time": {"blurb": "Add time & attendance — GPS clock-in and shift scheduling on top of Core Payroll.", "inherits": "Core Payroll", "groups": [{"h": "Attendance", "items": ["GPS clock-in / out", "Geofenced work locations", "Corrections & OT requests", "OT multipliers (normal/rest/holiday)"]}, {"h": "Shift & roster", "items": ["Shift types (start/end/break)", "Per-employee roster", "Draft & publish schedules", "Holiday groups feeding OT/leave"]}]}, "growth": {"blurb": "Add the HR-suite tools: analytics, structured onboarding and advanced tax handling.", "inherits": "Time", "groups": [{"h": "Analytics", "items": ["Admin analytics dashboard", "Headcount by department", "Payroll & leave KPIs"]}, {"h": "Onboarding / offboarding", "items": ["Per-employee checklists", "Editable templates", "Auto-generate by department/role"]}, {"h": "Advanced tax", "items": ["TP1 relief claims (with approval)", "TP3 prior-employer records", "CP21 / CP22 / CP22A / CP58"]}]}, "performance": {"blurb": "Add the performance-management cycle to the full HR suite.", "inherits": "Growth", "groups": [{"h": "Appraisals", "items": ["Cycles (self → manager → complete)", "Criteria ratings & comments", "Goals & overall rating", "Reviewer assignment"]}]}, "enterprise": {"blurb": "The complete HRMS with physical data isolation and priority service.", "inherits": "Performance", "groups": [{"h": "Isolation & governance", "items": ["Dedicated Supabase project", "Encrypted tenant keys", "Row-level security across data", "Audit-ready"]}, {"h": "Service", "items": ["Priority support & SLA", "Guided setup & migration", "Historical payroll import", "Custom integrations"]}]}}, "addons": [{"id": "setup", "name": "Setup & data migration", "desc": "Import employees, opening balances", "cost": 2000, "once": true}, {"id": "histpay", "name": "Historical payroll import", "desc": "Seed prior months / YTD", "cost": 800, "once": true}, {"id": "isolation", "name": "Dedicated Supabase project", "desc": "Physical data isolation", "cost": 300, "once": false}, {"id": "integration", "name": "Accounting / HRIS integration", "desc": "One-time build", "cost": 6000, "once": true}, {"id": "support", "name": "Priority support & SLA", "desc": "Same-day response", "cost": 400, "once": false}, {"id": "training", "name": "Onsite HR training", "desc": "Half-day · after delivery", "cost": 1200, "once": true, "postDelivery": true}]}};
-const ORDER=["sales", "school", "hrms"];
+PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system",subline:"Bespoke system — tick only the modules the customer needs. Licensed annually.",unit:"module",unitp:"modules",minAnnual:6000,setup:{name:"Setup, delivery & onboarding",cost:3500},groups:[
+ {h:"Foundation",items:[
+  {id:"core",name:"Core platform & user management",desc:"Roles, permissions, secure login, admin console",price:3600},
+  {id:"dash",name:"Custom dashboard & analytics",desc:"KPI cards, charts, exportable reports",price:2400},
+  {id:"branch",name:"Multi-branch / multi-company",desc:"Branches with cross-branch reporting",price:2400},
+  {id:"mobile",name:"Mobile-responsive web app",desc:"Works on any phone browser",price:1800}]},
+ {h:"Sales & CRM",items:[
+  {id:"lead",name:"Lead & pipeline management",desc:"Capture, assign, stages, reminders",price:2400},
+  {id:"crm",name:"Customer database (CRM)",desc:"Profiles, history, notes",price:1800},
+  {id:"comm",name:"Commission engine",desc:"Schemes, overrides, statements",price:3600},
+  {id:"quote",name:"Quotation & invoicing",desc:"Branded quotes and invoices",price:2400},
+  {id:"target",name:"Sales targets & KPI tracking",desc:"Targets vs achievement",price:1500}]},
+ {h:"Field & operations",items:[
+  {id:"gps",name:"GPS clock-in & attendance",desc:"Geofenced clock-in / out",price:2400},
+  {id:"activity",name:"GPS-stamped activity logging",desc:"Field visits with live location",price:1800},
+  {id:"eform",name:"e-Forms & document vault",desc:"Custom forms and file storage",price:1800},
+  {id:"inv",name:"Inventory / stock control",desc:"Items, stock movements, alerts",price:3000},
+  {id:"book",name:"Booking / scheduling",desc:"Appointments and calendar",price:2400},
+  {id:"task",name:"Task & project management",desc:"Assignments and approvals",price:2400}]},
+ {h:"HR & payroll",items:[
+  {id:"emp",name:"Employee records & self-service",desc:"Profiles, leave, claims",price:2400},
+  {id:"payroll",name:"Malaysian statutory payroll",desc:"EPF/SOCSO/EIS/PCB, payslips, EA form",price:4800},
+  {id:"appraisal",name:"Appraisals & performance",desc:"Review cycles and ratings",price:2400}]},
+ {h:"Finance & integrations",items:[
+  {id:"pay",name:"Online payments (FPX / DuitNow / card)",desc:"Payment gateway integration",price:3000},
+  {id:"acct",name:"Accounting & GL export",desc:"Journals and statements",price:2400},
+  {id:"sub",name:"Subscription / recurring billing",desc:"Auto-invoicing and reminders",price:2400},
+  {id:"api",name:"Third-party / HQ API integration",desc:"Connect external systems",price:6000},
+  {id:"wa",name:"WhatsApp / notifications gateway",desc:"Broadcast and alerts",price:2400}]},
+ {h:"Engagement & governance",items:[
+  {id:"game",name:"Gamification & rewards",desc:"Points, badges, leaderboard",price:1800},
+  {id:"portal",name:"Member / customer portal",desc:"Self-service portal",price:2400},
+  {id:"domain",name:"Custom domain & branding",desc:"yourbrand.com with full theme",price:1200},
+  {id:"isolation",name:"Dedicated hosting (isolated database)",desc:"Physical data isolation",price:3600},
+  {id:"sla",name:"Priority support & SLA",desc:"Same-day response",price:3600}]}
+]};
+const ORDER=["sales", "school", "hrms", "custom"];
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
 const TAX_PCT=8;
@@ -486,7 +522,7 @@ const CHECK='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d
 const PAYMENT_STAGES=[{label:"Upon confirmation",pct:10},{label:"Upon 1st draft completed",pct:40},{label:"Balance upon delivery",pct:50}];
 
 let state={ product:ORDER[0], cycle:"monthly", cur:"RM|MYR", client:"", agent:"", cust:{contact:"",email:"",phone:"",address:"",notes:""}, cfg:{}, included:new Set() };
-ORDER.forEach(pid=>{ const p=PRODUCTS[pid]; state.cfg[pid]={ tier:p.tiers[p.defaultTier].id, units:p.default, addons:new Set() }; });
+ORDER.forEach(pid=>{ const p=PRODUCTS[pid]; state.cfg[pid]= p.custom ? { picked:new Set(), setup:true } : { tier:p.tiers[p.defaultTier].id, units:p.default, addons:new Set() }; });
 function P(){ return PRODUCTS[state.product]; }
 function CFG(){ return state.cfg[state.product]; }
 function activeIds(){ return state.included.size? ORDER.filter(id=>state.included.has(id)) : [state.product]; }
@@ -502,12 +538,13 @@ function bandMultFor(pid,u){ const b=PRODUCTS[pid].bands; if(!b.length) return 1
 const prodswitch=document.getElementById("prodswitch");
 ORDER.forEach((pid,i)=>{ const b=document.createElement("button"); b.dataset.p=pid; b.textContent=PRODUCTS[pid].name; b.setAttribute("aria-pressed", i===0); b.addEventListener("click",()=>loadProduct(pid)); prodswitch.appendChild(b); });
 
-const LICONS={sales:"📈",school:"🎓",hrms:"👥"};
+const LICONS={sales:"📈",school:"🎓",hrms:"👥",custom:"🧩"};
 function buildLandingTiles(){
   const el=document.getElementById("lTiles"); el.innerHTML="";
   ORDER.forEach(pid=>{ const p=PRODUCTS[pid];
     const d=document.createElement("div"); d.className="l-tile"; d.setAttribute("role","button"); d.setAttribute("tabindex","0");
-    d.innerHTML=`<div class="ic">${LICONS[pid]||"•"}</div><h3>${p.name}</h3><p>${p.subline}</p><span class="meta">${p.tiers.length} packages · per ${p.unit}</span><span class="go">Start quote <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+    const meta = p.custom ? `${p.groups.reduce((n,g)=>n+g.items.length,0)} modules · à la carte · yearly` : `${p.tiers.length} packages · per ${p.unit}`;
+    d.innerHTML=`<div class="ic">${LICONS[pid]||"•"}</div><h3>${p.name}</h3><p>${p.subline}</p><span class="meta">${meta}</span><span class="go">Start quote <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
     d.addEventListener("click",()=>startProduct(pid));
     d.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); startProduct(pid); } });
     el.appendChild(d);
@@ -516,12 +553,54 @@ function buildLandingTiles(){
 function enterApp(){ document.getElementById("landing").style.display="none"; document.getElementById("app").style.display="block"; window.scrollTo(0,0); }
 function showLanding(){ document.getElementById("app").style.display="none"; document.getElementById("landing").style.display="flex"; updateSavedCount(); window.scrollTo(0,0); }
 function startProduct(pid){ enterApp(); loadProduct(pid); }
+function setCustomUI(on){
+  const ctrls=document.querySelector(".ctrls"); if(ctrls) ctrls.style.display=on?"none":"";
+  const inc=document.querySelector(".includebar"); if(inc) inc.style.display=on?"none":"";
+  const add=document.querySelector(".addons"); if(add) add.style.display=on?"none":"";
+  if(on){ const vt=document.getElementById("voltag"); if(vt) vt.style.display="none"; }
+}
+function ensureModStyles(){
+  if(document.getElementById("modStyles")) return;
+  const s=document.createElement("style"); s.id="modStyles";
+  s.textContent=`.modnote{font-size:13px;color:var(--ink-faint,#8a97a0);margin:2px 0 16px}
+  .modgroup{margin:0 0 6px}
+  .modgroup h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-faint,#8a97a0);margin:18px 0 9px}
+  .modrow{display:flex;align-items:center;gap:13px;padding:12px 15px;border:1px solid var(--line,#28323a);border-radius:13px;margin-bottom:9px;cursor:pointer;transition:border-color .15s,background .15s}
+  .modrow:hover{border-color:var(--gold,#e6b84b)}
+  .modrow input{position:absolute;opacity:0;width:0;height:0}
+  .modrow .modfake{flex:none;width:21px;height:21px;border-radius:6px;border:2px solid var(--line,#3a4650);display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .modrow input:checked+.modfake{background:var(--gold,#e6b84b);border-color:var(--gold,#e6b84b)}
+  .modrow input:checked+.modfake:after{content:"";width:6px;height:10px;border:solid #14303e;border-width:0 2.4px 2.4px 0;transform:rotate(45deg);margin-top:-2px}
+  .modrow .modinfo{flex:1;min-width:0}
+  .modrow .modinfo b{display:block;font-size:14px;color:var(--ink,inherit)}
+  .modrow .modinfo small{display:block;font-size:12px;color:var(--ink-faint,#8a97a0);margin-top:2px}
+  .modrow .modcost{flex:none;font-weight:800;font-size:13.5px;color:var(--gold,#e6b84b);white-space:nowrap}
+  .modrow:has(input:checked){border-color:var(--gold,#e6b84b);background:rgba(230,184,75,.08)}`;
+  document.head.appendChild(s);
+}
+function buildModules(){
+  ensureModStyles();
+  const p=P(), el=document.getElementById("tiers"); el.className="modwrap";
+  let html=`<div class="modnote">Tick the modules the customer needs — the annual price updates as you go. Custom builds are <b>licensed yearly</b>.</div>`;
+  p.groups.forEach(g=>{ html+=`<div class="modgroup"><h4>${g.h}</h4>`;
+    g.items.forEach(m=>{ html+=`<label class="modrow"><input type="checkbox" data-mod="${m.id}"><span class="modfake"></span><span class="modinfo"><b>${m.name}</b><small>${m.desc}</small></span><span class="modcost" data-modcost="${m.id}"></span></label>`; });
+    html+=`</div>`; });
+  html+=`<div class="modgroup"><h4>One-time</h4><label class="modrow"><input type="checkbox" id="setupChk" data-setup><span class="modfake"></span><span class="modinfo"><b>${p.setup.name}</b><small>Charged once, before delivery (10% / 40% / balance)</small></span><span class="modcost" data-setupcost></span></label></div>`;
+  el.innerHTML=html;
+  el.querySelectorAll("[data-mod]").forEach(cb=>cb.addEventListener("change",()=>{ cb.checked?CFG().picked.add(cb.dataset.mod):CFG().picked.delete(cb.dataset.mod); render(); }));
+  const sc=el.querySelector("[data-setup]"); if(sc) sc.addEventListener("change",()=>{ CFG().setup=sc.checked; render(); });
+}
+function findMod(p,id){ for(const g of p.groups){ for(const m of g.items){ if(m.id===id) return m; } } return null; }
 function applyProduct(pid){
   state.product=pid; const p=P();
   document.querySelectorAll("#prodswitch button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.p===pid));
   document.getElementById("eyebrow").textContent=p.name;
   document.getElementById("headline").textContent=p.headline;
   document.getElementById("subline").textContent=p.subline;
+  setCustomUI(!!p.custom);
+  if(p.custom){ state.included.clear(); state.cycle="annual"; buildModules();
+    document.getElementById("fineprint").innerHTML=`<h4>How custom pricing works</h4><ul><li><b>Tick only what the customer needs</b> — the annual price updates instantly.</li><li><b>Licensed yearly.</b> Each module is an annual licence; there is no monthly option for custom builds.</li><li><b>Minimum ${fmt((p.minAnnual||0)*fx())}/year</b> for a custom build.</li><li><b>Setup, delivery &amp; onboarding</b> is billed once (10% on confirmation / 40% on 1st draft / balance on delivery).</li><li><b>Need something not listed?</b> Note it in the customer details and we'll scope it.</li></ul>`;
+    return; }
   document.getElementById("unitword").textContent=p.unitp;
   const r=document.getElementById("range"); r.min=p.min; r.max=p.max; r.step=p.step;
   buildTiers(); buildAddons(); buildFineprint();
@@ -529,7 +608,7 @@ function applyProduct(pid){
 function loadProduct(pid){ applyProduct(pid); syncControls(); render(); }
 
 function buildTiers(){
-  const p=P(), el=document.getElementById("tiers"); el.innerHTML="";
+  const p=P(), el=document.getElementById("tiers"); el.className="tiers"; el.innerHTML="";
   p.tiers.forEach(t=>{
     const c=document.createElement("div"); c.className="tier"; c.dataset.id=t.id;
     c.setAttribute("role","button"); c.setAttribute("tabindex","0");
@@ -584,13 +663,14 @@ window.addEventListener("beforeprint", buildQuote);
 
 function syncControls(){
   const c=CFG();
-  range.value=c.units; unitnum.value=c.units;
   document.getElementById("clientname").value=state.client;
   document.getElementById("custContact").value=state.cust.contact||"";
   document.getElementById("custEmail").value=state.cust.email||"";
   document.getElementById("custPhone").value=state.cust.phone||"";
   document.getElementById("custAddr").value=state.cust.address||"";
   document.getElementById("custNotes").value=state.cust.notes||"";
+  if(P().custom) return;
+  range.value=c.units; unitnum.value=c.units;
   document.querySelectorAll("#cycle button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.cycle===state.cycle));
   document.querySelectorAll("[data-add]").forEach(cb=>{ cb.checked=c.addons.has(cb.dataset.add); });
   document.getElementById("includeToggle").checked=state.included.has(state.product);
@@ -599,6 +679,13 @@ function syncControls(){
 
 function calcOne(pid){
   const p=PRODUCTS[pid], c=state.cfg[pid], rate=fx();
+  if(p.custom){
+    const items=[]; let raw=0;
+    p.groups.forEach(g=>g.items.forEach(m=>{ if(c.picked.has(m.id)){ const amt=m.price*rate; raw+=amt; items.push({id:m.id,name:m.name,amt}); } }));
+    const floorAmt=(p.minAnnual||0)*rate, floored=raw>0&&raw<floorAmt, annualLic=floored?floorAmt:raw;
+    const setup=c.setup?(p.setup.cost*rate):0;
+    return {p,custom:true,items,t:{name:"Custom build"},annualLic,rawModules:raw,billUnits:0,mult:1,perUnit:0,seats:annualLic,rec:0,once:setup,onceProj:setup,oncePost:0,yr:0,addOn:[],addOnce:[],addYear:[],monthlyRecurring:annualLic/12,seatsBilled:annualLic,recurringTotal:annualLic,billedNow:annualLic+setup,floored,annual:true};
+  }
   const billUnits=Math.max(p.min, c.units), t=tierOf(pid,c.tier);
   const mult=bandMultFor(pid,billUnits), perUnit=t.price*rate*mult;
   let seats=perUnit*billUnits; const floorAmt=(p.minMonthly||0)*rate; const floored=seats<floorAmt; if(floored) seats=floorAmt;
@@ -618,8 +705,28 @@ function calcAll(){
   return {ids,monthlyRecurring,recurringTotal,once,onceProj,oncePost,yr,billedNow,annual:state.cycle==="annual"};
 }
 
+function renderCustom(){
+  const p=P(), c=CFG(), one=calcOne(state.product);
+  document.querySelectorAll("[data-modcost]").forEach(s=>{ const m=findMod(p,s.dataset.modcost); if(m) s.textContent=fmt(m.price*fx())+"/yr"; });
+  document.querySelectorAll("[data-mod]").forEach(cb=>{ cb.checked=c.picked.has(cb.dataset.mod); });
+  const sc=document.getElementById("setupChk"); if(sc) sc.checked=!!c.setup;
+  const scc=document.querySelector("[data-setupcost]"); if(scc) scc.textContent=fmt(p.setup.cost*fx());
+  document.getElementById("prodSub").textContent="";
+  const sub=one.billedNow, sst=sub*TAX_PCT/100, tot=sub+sst;
+  document.getElementById("s-sub").textContent=fmt2(sub);
+  document.getElementById("s-sst").textContent=fmt2(sst);
+  document.getElementById("s-total").textContent=fmt2(tot);
+  document.getElementById("s-included").textContent=p.name+" · "+c.picked.size+" module"+(c.picked.size===1?"":"s");
+  document.getElementById("s-cycle").textContent="Annual";
+  let note=`Custom build — ${fmt(one.annualLic)}/year licence for ${c.picked.size} module${c.picked.size===1?"":"s"}.`;
+  if(one.floored) note+=` Minimum ${fmt((p.minAnnual||0)*fx())}/year applied.`;
+  if(one.once) note+=` One-time setup ${fmt(one.once)} (staged).`;
+  document.getElementById("s-setup").textContent=note;
+  renderPayPlan(calcAll());
+}
 function render(){
   const p=P(), c=CFG();
+  if(p.custom){ renderCustom(); return; }
   range.value=Math.min(+range.max,Math.max(+range.min,c.units));
   if(document.activeElement!==unitnum) unitnum.value=c.units;
   const one=calcOne(state.product), el=document.getElementById("tiers");
@@ -688,8 +795,11 @@ document.getElementById("mpPick").addEventListener("click",()=>{ if(openKey){ CF
 
 function buildQuote(){
   const all=calcAll(), mult=all.annual?ANNUAL_MONTHS:1;
-  document.getElementById("qs-kicker").textContent=(all.ids.length>1?"Multi-product":PRODUCTS[all.ids[0]].name)+" · Quotation";
-  document.getElementById("qs-fine").textContent=`Pro360 Technology · Web-based platform. Priced per unit; minimums apply per product. Annual billing = pay 10 months, get 12. This quote is an estimate and not a binding contract. Figures exclude applicable taxes.`;
+  const isCustomQuote=all.ids.length===1&&PRODUCTS[all.ids[0]].custom;
+  document.getElementById("qs-kicker").textContent=(isCustomQuote?"Custom Build":all.ids.length>1?"Multi-product":PRODUCTS[all.ids[0]].name)+" · Quotation";
+  document.getElementById("qs-fine").textContent=isCustomQuote
+    ? `Pro360 Technology · Bespoke web platform. Custom builds are licensed annually; modules can be added later. Setup is billed once. This quote is an estimate and not a binding contract. Figures exclude applicable taxes.`
+    : `Pro360 Technology · Web-based platform. Priced per unit; minimums apply per product. Annual billing = pay 10 months, get 12. This quote is an estimate and not a binding contract. Figures exclude applicable taxes.`;
   const bl=[state.client.trim(), state.cust.contact, state.cust.email, state.cust.phone, state.cust.address].filter(Boolean).map(x=>String(x).replace(/</g,"&lt;"));
   document.getElementById("qsBillto").innerHTML = bl.length ? '<div class="qs-bl-label">Prepared for</div>'+bl.join("<br>") : "";
   document.getElementById("qs-by").textContent=state.agent.trim()||"—";
@@ -697,6 +807,13 @@ function buildQuote(){
   const rows=[];
   all.ids.forEach(pid=>{
     const c=calcOne(pid), p=PRODUCTS[pid];
+    if(c.custom){
+      rows.push(`<tr class="grp"><td colspan="3">${p.name} · annual licence</td></tr>`);
+      c.items.forEach(m=>rows.push(`<tr><td>${m.name}</td><td class="r">annual licence</td><td class="r">${fmt(m.amt)}/yr</td></tr>`));
+      if(c.floored) rows.push(`<tr><td>Minimum annual licence adjustment</td><td class="r"></td><td class="r">${fmt(c.annualLic-c.rawModules)}</td></tr>`);
+      if(c.once) rows.push(`<tr><td>${p.setup.name}</td><td class="r">one-time</td><td class="r">${fmt(c.once)}</td></tr>`);
+      return;
+    }
     rows.push(`<tr class="grp"><td colspan="3">${p.name} · ${c.t.name} · billed ${c.annual?"annually":"monthly"}</td></tr>`);
     const rl=c.mult<1?`${fmt(c.perUnit)}/${p.unit} (−${Math.round((1-c.mult)*100)}%)`:`${fmt(c.perUnit)}/${p.unit}`;
     rows.push(`<tr><td>${c.t.name} — subscription</td><td class="r">${c.floored?"minimum · "+c.billUnits+" "+p.unitp:rl+" × "+c.billUnits+(c.annual?" × "+ANNUAL_MONTHS+"mo":"")}</td><td class="r">${fmt(c.seatsBilled)}</td></tr>`);
@@ -727,6 +844,12 @@ function updateSavedCount(){ const n=REMOTE.length; const a=document.getElementB
 function quoteLines(all){
   const lines=[];
   all.ids.forEach(pid=>{ const c=calcOne(pid), p=PRODUCTS[pid], cyc=all.annual?"annual":"monthly";
+    if(c.custom){
+      c.items.forEach(m=>lines.push({ sku:("QS-CUSTOM-"+m.id).toUpperCase(), description:`Custom Build · ${m.name} (annual licence)`, qty:1, unit_price:round2(m.amt), line_total:round2(m.amt) }));
+      if(c.floored){ const adj=round2(c.annualLic-c.rawModules); if(adj>0) lines.push({ description:`Custom Build · minimum annual licence adjustment`, qty:1, unit_price:adj, line_total:adj }); }
+      if(c.once) lines.push({ description:`Custom Build · ${p.setup.name} (one-time)`, qty:1, unit_price:round2(c.once), line_total:round2(c.once) });
+      return;
+    }
     const subAmt=all.annual?c.seatsBilled:c.seats;
     lines.push({ sku:("QS-"+pid+"-"+state.cfg[pid].tier).toUpperCase(), description:`${p.name} — ${c.t.name} · ${c.billUnits} ${p.unitp} · ${cyc}${c.mult<1?" (−"+Math.round((1-c.mult)*100)+"%)":""}${c.floored?" · minimum monthly":""}`, qty:1, unit_price:round2(subAmt), line_total:round2(subAmt) });
     c.addOn.forEach(a=>lines.push({ description:`${p.name} · ${a.name} (recurring, ${cyc})`, qty:1, unit_price:round2(all.annual?a.amt*ANNUAL_MONTHS:a.amt), line_total:round2(all.annual?a.amt*ANNUAL_MONTHS:a.amt) }));
@@ -737,6 +860,15 @@ function quoteLines(all){
 }
 function quoteNotes(all){
   const L=[];
+  const cId=all.ids.find(id=>PRODUCTS[id].custom);
+  if(cId){ const c=calcOne(cId);
+    L.push("Custom Build — annual licence");
+    L.push("Modules ("+c.items.length+"): "+(c.items.map(m=>m.name).join("; ")||"—"));
+    L.push("Annual licence: "+fmt(c.annualLic)+"/yr"+(c.floored?" (minimum applied)":""));
+    if(c.once) L.push(P().setup.name+" "+fmt(c.once)+" — 10% on confirmation / 40% on 1st draft / balance on delivery");
+    L.push("Prepared by: "+(state.agent||(AGENT&&AGENT.full_name)||""));
+    return L.join("\n");
+  }
   L.push("Products: "+all.ids.map(id=>PRODUCTS[id].name+" — "+tierOf(id,state.cfg[id].tier).name).join("; "));
   L.push("Billing: "+(all.annual?"Annual (2 months free)":"Monthly"));
   L.push("Recurring: "+(all.annual?fmt(all.recurringTotal)+"/yr":fmt(all.monthlyRecurring)+"/mo"));
