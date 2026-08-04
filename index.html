@@ -661,6 +661,38 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
   const SC={starter:399,academic:599,engage:799,complete:999,group:1299};
   PRODUCTS.school.tiers.forEach(t=>{ if(SC[t.id]!=null) t.minMonthly=SC[t.id]; });
 })();
+(function(){ // refresh HRMS packages to match the live Malaysian payroll system
+  const H=PRODUCTS.hrms;
+  H.subline="Five packages for Malaysian employers, priced per employee — statutory-compliant payroll to a full HR suite with 360 appraisals and multi-company.";
+  const TAG={core:"Statutory payroll, payslips, leave, claims & employee records.",time:"Add GPS attendance, OT and shift rostering.",growth:"Add analytics, onboarding, announcements & advanced tax.",performance:"Add appraisals — 360, calibration & payroll outcomes.",enterprise:"Multi-company, isolation, impersonation & priority SLA."};
+  H.tiers.forEach(t=>{ if(TAG[t.id]) t.tag=TAG[t.id]; });
+  H.details={
+    core:{blurb:"Run fully compliant Malaysian payroll from day one — statutory, payslips, leave, claims, employees and self-service.",groups:[
+      {h:"Payroll & statutory",items:["Monthly & bonus pay runs (marginal PCB on bonus)","EPF/KWSP · SOCSO/PERKESO · EIS/SIP · PCB/MTD","HRDF/PSMB levy & SKBBK / Lindung 24 Jam (2026 rates)","Zakat — fixed monthly, applied as PCB rebate","Loans / advances auto-deducted each run","Allowance types with per-item statutory flags","Pay-run lifecycle: generate → adjust → issue → revert / lock"]},
+      {h:"Payslips & statutory forms",items:["Branded PDF payslips (Employment Act 1955 s.25A)","EA Form (C.P.8A) & Form E (CP8D)","Bank, EPF, SOCSO, EIS & PCB (CP39) export files","Double-entry accounting GL journal export"]},
+      {h:"Leave & claims",items:["Leave apply / approve — 9 types, EA entitlements","Policy engine: accrual, carry-forward, pro-rate, seniority bonus","Two-level approval + manager routing","Team leave calendar","Expense claims with receipts & approvals","YTD reporting"]},
+      {h:"Employees & self-service",items:["Employee records + bulk CSV import","Departments, designations, branches","Documents with expiry alerts (passport / work permit)","Family, dependants & emergency contacts","Company assets tracking","Self-service portal (payslips, EA, leave)","Profile-change approvals & notifications centre"]}
+    ]},
+    time:{blurb:"Add time & attendance — GPS geofenced clock-in, overtime and shift scheduling on top of Core Payroll.",inherits:"Core Payroll",groups:[
+      {h:"Attendance",items:["GPS clock-in / out with resolved location","Geofenced work locations (radius) & allowed sites","Per-employee clock modes; open clock-in toggle","Attendance / OT / correction requests"]},
+      {h:"Overtime & roster",items:["OT multipliers — normal / rest-day / holiday","OT-eligible designations & per-employee eligibility","Reusable shift types (times, break, colour)","Per-employee roster — draft → publish","Holiday groups feeding OT / leave"]}
+    ]},
+    growth:{blurb:"Add the HR-suite tools: analytics, structured onboarding, announcements and advanced Malaysian tax.",inherits:"Time",groups:[
+      {h:"Analytics",items:["Headcount by department / gender / type","Salary cost, averages & payroll KPIs","Leave-liability valuation","Joiners / leavers trend"]},
+      {h:"Onboarding & comms",items:["Onboarding / offboarding checklists","Editable templates by department / designation","Auto-generate checklist per employee","Company announcements feed (pin, categories)"]},
+      {h:"Advanced tax",items:["TP1 relief claims — 12 categories, with approval","TP3 prior-employer income (mid-year joiners)","CP21 · CP22 · CP22A · CP58 forms","Company holidays / holiday groups"]}
+    ]},
+    performance:{blurb:"Add the full performance cycle — 360 feedback, calibration and outcomes that flow into payroll.",inherits:"Growth",groups:[
+      {h:"Appraisals",items:["Cycles: self → manager → complete","Weighted per-role competency templates","Configurable 1–5 rating scale","Goals & overall rating; bulk assign"]},
+      {h:"360 & calibration",items:["Peer / 360 reviews (self vs manager vs peer)","Bell-curve distribution & calibration","Appraisal audit trail"]},
+      {h:"Outcomes → HR action",items:["Confirm probation → Permanent","Promotions","Salary increment auto-applied to next payslip"]}
+    ]},
+    enterprise:{blurb:"The complete HRMS — run many companies from one portal, with data isolation and priority service.",inherits:"Performance",groups:[
+      {h:"Multi-company & governance",items:["Multi-company from one portal + company switcher","Platform-owner / Super-Admin controls","One-tap impersonation (log in as a company)","Dedicated database & tenant isolation","Row-level security, audit-ready"]},
+      {h:"Migration & service",items:["Historical payroll import","Opening balances — mid-year go-live","Priority support & SLA","Guided setup & migration","Custom integrations (GL, bank, statutory)"]}
+    ]}
+  };
+})();
 const ORDER=["sales", "school", "hrms", "custom"];
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
