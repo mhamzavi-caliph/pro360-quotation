@@ -256,6 +256,13 @@
     .qs-paytable .grp td { font-weight:700; color:#14303e; background:#f5f7f1; text-transform:uppercase; font-size:10px; letter-spacing:.05em; }
     .qs-paynote { font-size:11px; color:#555; margin:8px 0 14px; font-style:italic; }
     .qs-fine { font-size:9.5px; color:#999; line-height:1.5; margin:0; }
+    .qs-features { margin:16px 0; }
+    .qsf-title { font-size:12px; font-weight:800; color:#14303e; text-transform:uppercase; letter-spacing:.06em; border-top:1px solid #ddd; padding-top:14px; margin-bottom:8px; }
+    .qsf-prod { font-size:12px; font-weight:800; color:#14303e; margin:10px 0 6px; break-after:avoid; }
+    .qsf-grp { margin:0 0 8px; break-inside:avoid; }
+    .qsf-grp b { font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:#666; display:block; margin-bottom:3px; font-weight:700; }
+    .qsf-grp ul { margin:0; padding-left:15px; columns:2; column-gap:22px; }
+    .qsf-grp li { font-size:10.5px; color:#333; margin-bottom:2px; break-inside:avoid; }
   }
   .includebar { display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--gold); border-radius:12px; padding:12px 16px; box-shadow:var(--shadow); margin-bottom:22px; }
   .switch { display:inline-flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:var(--ink); font-weight:600; }
@@ -461,6 +468,7 @@
     <tfoot id="qs-foot"></tfoot>
   </table>
   <p class="qs-note" id="qs-note"></p>
+  <div class="qs-features" id="qsFeatures"></div>
   <div class="qs-pay" id="qsPay"></div>
   <p class="qs-fine" id="qs-fine"></p>
 </div>
@@ -891,6 +899,13 @@ cmpModal.addEventListener("click",e=>{ if(e.target.closest("[data-closecmp]"))cl
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&cmpModal.classList.contains("open"))closeCompare(); });
 document.getElementById("mpPick").addEventListener("click",()=>{ if(openKey){ CFG().tier=openKey; state.included.add(state.product); render(); } closePlan(); });
 
+function cumulativeGroups(pid,tierId){
+  const p=PRODUCTS[pid], idx=p.tiers.findIndex(t=>t.id===tierId), groups=[], map={};
+  for(let i=0;i<=idx;i++){ const d=p.details[p.tiers[i].id]; if(!d)continue;
+    d.groups.forEach(g=>{ if(!(g.h in map)){ map[g.h]=groups.length; groups.push({h:g.h,items:[]}); }
+      const gg=groups[map[g.h]]; g.items.forEach(it=>{ if(!gg.items.includes(it)) gg.items.push(it); }); }); }
+  return groups;
+}
 function buildQuote(){
   const all=calcAll(), mult=all.annual?ANNUAL_MONTHS:1;
   const isCustomQuote=all.ids.length===1&&PRODUCTS[all.ids[0]].custom;
@@ -932,6 +947,16 @@ function buildQuote(){
   pay.push(`<tr><td>Then · subscription (from go-live)</td><td class="r">${all.annual?fmt(all.recurringTotal)+"/yr":fmt(all.monthlyRecurring)+"/mo"}</td></tr>`);
   document.getElementById("qsPay").innerHTML=`<table class="qs-paytable"><tbody>${pay.join("")}</tbody></table><p class="qs-paynote">Staff training is scheduled after delivery of the system.</p>`;
   document.getElementById("qs-note").textContent=document.getElementById("s-setup").textContent;
+  const feats=[];
+  all.ids.forEach(pid=>{ const c=calcOne(pid), p=PRODUCTS[pid];
+    if(c.custom){ if(c.items.length){ feats.push(`<div class="qsf-prod">${p.name} — included modules</div>`);
+        c.items.forEach(m=>{ const mod=findMod(p,m.id); feats.push(`<div class="qsf-grp"><b>${mod?mod.name:m.name}</b>${mod&&mod.features?`<ul>${mod.features.map(f=>`<li>${f}</li>`).join("")}</ul>`:(mod&&mod.desc?`<ul><li>${mod.desc}</li></ul>`:"")}</div>`); }); }
+      return; }
+    const groups=cumulativeGroups(pid,state.cfg[pid].tier);
+    feats.push(`<div class="qsf-prod">${p.name} · ${c.t.name} — what's included</div>`);
+    groups.forEach(g=>feats.push(`<div class="qsf-grp"><b>${g.h}</b><ul>${g.items.map(i=>`<li>${i}</li>`).join("")}</ul></div>`));
+  });
+  document.getElementById("qsFeatures").innerHTML = feats.length ? `<div class="qsf-title">Package details — what's included</div>`+feats.join("") : "";
 }
 
 /* ---- Supabase: Finance agent login + save quotations into Finance ---- */
