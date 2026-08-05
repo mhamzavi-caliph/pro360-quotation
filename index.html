@@ -672,7 +672,7 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
     core:{blurb:"Run fully compliant Malaysian payroll from day one — statutory, payslips, leave, claims, employees and self-service.",groups:[
       {h:"Payroll & statutory",items:["Monthly & bonus pay runs (marginal PCB on bonus)","EPF/KWSP · SOCSO/PERKESO · EIS/SIP · PCB/MTD","HRDF/PSMB levy & SKBBK / Lindung 24 Jam (2026 rates)","Zakat — fixed monthly, applied as PCB rebate","Loans / advances auto-deducted each run","Allowance types with per-item statutory flags","Pay-run lifecycle: generate → adjust → issue → revert / lock"]},
       {h:"Payslips & statutory forms",items:["Branded PDF payslips (Employment Act 1955 s.25A)","EA Form (C.P.8A) & Form E (CP8D)","Bank, EPF, SOCSO, EIS & PCB (CP39) export files","Double-entry accounting GL journal export"]},
-      {h:"Leave & claims",items:["Leave apply / approve — 9 types, EA entitlements","Policy engine: accrual, carry-forward, pro-rate, seniority bonus","Two-level approval + manager routing","Team leave calendar","Expense claims with receipts & approvals","YTD reporting"]},
+      {h:"Leave & claims",items:["Leave apply / approve — 9 types, EA entitlements","Policy engine: accrual, carry-forward, pro-rate, seniority bonus","3-level approval chains (First / Second / Final, or manager routing)","Team leave calendar","Expense claims with receipts & approvals","YTD reporting"]},
       {h:"Employees & self-service",items:["Employee records + bulk CSV import","Departments, designations, branches","Documents with expiry alerts (passport / work permit)","Family, dependants & emergency contacts","Company assets tracking","Self-service portal (payslips, EA, leave)","Profile-change approvals & notifications centre"]}
     ]},
     time:{blurb:"Add time & attendance — GPS geofenced clock-in, overtime and shift scheduling on top of Core Payroll.",inherits:"Core Payroll",groups:[
@@ -681,7 +681,7 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
     ]},
     growth:{blurb:"Add the HR-suite tools: analytics, structured onboarding, announcements and advanced Malaysian tax.",inherits:"Time",groups:[
       {h:"Analytics",items:["Headcount by department / gender / type","Salary cost, averages & payroll KPIs","Leave-liability valuation","Joiners / leavers trend"]},
-      {h:"Onboarding & comms",items:["Onboarding / offboarding checklists","Editable templates by department / designation","Auto-generate checklist per employee","Company announcements feed (pin, categories)"]},
+      {h:"Onboarding & comms",items:["Onboarding / offboarding checklists","Editable templates by department / designation","Auto-generate checklist per employee","Training & development records (provider, dates, cost, HRDF-claimable)","Company announcements feed (pin, categories)"]},
       {h:"Advanced tax",items:["TP1 relief claims — 12 categories, with approval","TP3 prior-employer income (mid-year joiners)","CP21 · CP22 · CP22A · CP58 forms","Company holidays / holiday groups"]}
     ]},
     performance:{blurb:"Add the full performance cycle — 360 feedback, calibration and outcomes that flow into payroll.",inherits:"Growth",groups:[
@@ -691,7 +691,7 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
     ]},
     enterprise:{blurb:"The complete HRMS — run many companies from one portal, with data isolation and priority service.",inherits:"Performance",groups:[
       {h:"Multi-company & governance",items:["Multi-company from one portal + company switcher","Platform-owner / Super-Admin controls","One-tap impersonation (log in as a company)","Dedicated database & tenant isolation","Row-level security, audit-ready"]},
-      {h:"Migration & service",items:["Historical payroll import","Opening balances — mid-year go-live","Priority support & SLA","Guided setup & migration","Custom integrations (GL, bank, statutory)"]}
+      {h:"Migration & service",items:["Bulk CSV import — attendance, OT, claims, appraisals + chunked historical payroll","Opening balances — mid-year go-live","One-click company data backup (CSV / ZIP export)","Priority support & SLA","Guided setup & migration","Custom integrations (GL, bank, statutory)"]}
     ]}
   };
 })();
