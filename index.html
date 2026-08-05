@@ -721,7 +721,7 @@ PRODUCTS.legal={name:"Legal Firm",unit:"user",unitp:"users",min:3,max:100,step:1
    ]}
  },
  addons:[
-   {id:"storage",name:"Extra storage — +50 GB",desc:"Additional document storage block",cost:49,once:false},
+   {id:"storage",name:"Extra storage — +50 GB",desc:"Additional document storage block",cost:49,once:false,qty:true},
    {id:"setup",name:"Setup & data migration",desc:"Import matters, clients & documents",cost:2500,once:true},
    {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1200,once:true,postDelivery:true}
  ]
@@ -736,7 +736,7 @@ const CHECK='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d
 const PAYMENT_STAGES=[{label:"Upon confirmation",pct:10},{label:"Upon 1st draft completed",pct:40},{label:"Balance upon delivery",pct:50}];
 
 let state={ product:ORDER[0], cycle:"monthly", cur:"RM|MYR", client:"", agent:"", cust:{contact:"",email:"",phone:"",address:"",notes:""}, cfg:{}, included:new Set(), discount:{mode:"pct",value:0} };
-ORDER.forEach(pid=>{ const p=PRODUCTS[pid]; state.cfg[pid]= p.custom ? { picked:new Set(), setup:true, basis:"flat", type:"general", heads:20 } : { tier:p.tiers[p.defaultTier].id, units:p.default, addons:new Set() }; });
+ORDER.forEach(pid=>{ const p=PRODUCTS[pid]; state.cfg[pid]= p.custom ? { picked:new Set(), setup:true, basis:"flat", type:"general", heads:20 } : { tier:p.tiers[p.defaultTier].id, units:p.default, addons:new Set(), addonQty:{} }; });
 function P(){ return PRODUCTS[state.product]; }
 function CFG(){ return state.cfg[state.product]; }
 function activeIds(){ return state.included.size? ORDER.filter(id=>state.included.has(id)) : [state.product]; }
@@ -877,6 +877,22 @@ function buildTiers(){
 function buildAddons(){
   const el=document.getElementById("addgrid"); el.innerHTML="";
   P().addons.forEach(a=>{
+    if(a.qty){
+      const bstyle="width:30px;height:30px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;font-size:17px;font-weight:700;cursor:pointer;line-height:1";
+      const d=document.createElement("div"); d.className="add"; d.style.cssText="display:flex;align-items:center;gap:12px";
+      d.innerHTML=`<span class="info" style="flex:1;min-width:0"><b>${a.name}</b><small>${a.desc} · recurring · stack as many blocks as you need</small></span>
+        <span class="qtyctl" style="display:inline-flex;align-items:center;gap:6px;flex:none">
+          <button type="button" data-qstep="${a.id}" data-dir="-1" aria-label="Less" style="${bstyle}">−</button>
+          <input type="number" data-addqty="${a.id}" min="0" value="0" inputmode="numeric" style="width:52px;text-align:center;font:inherit;font-weight:800;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)">
+          <button type="button" data-qstep="${a.id}" data-dir="1" aria-label="More" style="${bstyle}">+</button>
+        </span>
+        <span class="cost" data-addcost style="flex:none"></span>`;
+      el.appendChild(d);
+      const inp=d.querySelector("[data-addqty]");
+      inp.addEventListener("input",()=>{ CFG().addonQty[a.id]=Math.max(0,Math.floor(+inp.value||0)); render(); });
+      d.querySelectorAll("[data-qstep]").forEach(b=>b.addEventListener("click",()=>{ const cur=Math.max(0,+CFG().addonQty[a.id]||0); CFG().addonQty[a.id]=Math.max(0,cur+(+b.dataset.dir)); render(); }));
+      return;
+    }
     const l=document.createElement("label"); l.className="add";
     l.innerHTML=`<input type="checkbox" data-add="${a.id}"><span class="fake"></span>
       <span class="info"><b>${a.name}</b><small>${a.desc}${a.once?' · one-time':(a.period==='year'?' · yearly':' · recurring')}</small></span>
@@ -928,6 +944,7 @@ function syncControls(){
   range.value=c.units; unitnum.value=c.units;
   document.querySelectorAll("#cycle button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.cycle===state.cycle));
   document.querySelectorAll("[data-add]").forEach(cb=>{ cb.checked=c.addons.has(cb.dataset.add); });
+  document.querySelectorAll("[data-addqty]").forEach(inp=>{ inp.value=Math.max(0,+((c.addonQty||{})[inp.dataset.addqty])||0); });
   document.getElementById("includeToggle").checked=state.included.has(state.product);
   document.getElementById("includeName").textContent=P().name;
 }
@@ -961,10 +978,10 @@ function calcOne(pid){
   const mult=bandMultFor(pid,billUnits), perUnit=t.price*rate*mult;
   let seats=perUnit*billUnits; const tierMin=(t.minMonthly!=null?t.minMonthly:(p.minMonthly||0)); const floorAmt=tierMin*rate; const floored=seats<floorAmt; if(floored) seats=floorAmt;
   let rec=0,once=0,onceProj=0,oncePost=0,yr=0; const addOn=[],addOnce=[],addYear=[];
-  p.addons.forEach(a=>{ if(c.addons.has(a.id)){ const x=a.cost*rate;
-    if(a.once){ once+=x; if(a.postDelivery){oncePost+=x;} else {onceProj+=x;} addOnce.push({name:a.name,amt:x,post:!!a.postDelivery});}
-    else if(a.period==="year"){yr+=x;addYear.push({name:a.name,amt:x});}
-    else{rec+=x;addOn.push({name:a.name,amt:x});} } });
+  p.addons.forEach(a=>{ const qn=a.qty?(Math.max(0,+((c.addonQty||{})[a.id])||0)):(c.addons.has(a.id)?1:0); if(qn>0){ const x=a.cost*rate*qn, nm=(a.qty&&qn>1)?a.name+" ×"+qn:a.name;
+    if(a.once){ once+=x; if(a.postDelivery){oncePost+=x;} else {onceProj+=x;} addOnce.push({name:nm,amt:x,post:!!a.postDelivery});}
+    else if(a.period==="year"){yr+=x;addYear.push({name:nm,amt:x});}
+    else{rec+=x;addOn.push({name:nm,amt:x});} } });
   const annual=state.cycle==="annual", monthlyRecurring=seats+rec;
   const seatsBilled=annual?seats*ANNUAL_MONTHS:seats, addonBilled=annual?rec*ANNUAL_MONTHS:rec;
   const recurringTotal=seatsBilled+addonBilled, billedNow=recurringTotal+once+yr;
@@ -1019,7 +1036,14 @@ function render(){
     card.querySelector("[data-sel]").textContent=t.id===c.tier?"✓ Selected":"Select";
   });
   p.addons.forEach(a=>{ const suffix=a.once?"":(a.period==="year"?"/yr":"/mo");
-    document.querySelector(`[data-add="${a.id}"]`).closest(".add").querySelector("[data-addcost]").textContent=fmt(a.cost*fx())+suffix; });
+    if(a.qty){ const w=document.querySelector(`[data-addqty="${a.id}"]`); if(!w)return; const qn=Math.max(0,+((c.addonQty||{})[a.id])||0);
+      if(document.activeElement!==w) w.value=qn;
+      const ce=w.closest(".add").querySelector("[data-addcost]");
+      if(ce) ce.textContent=fmt(a.cost*fx()*(qn||1))+suffix+(qn>1?` · ${qn} blocks`:(qn===1?" · 1 block":""));
+    } else {
+      const cb=document.querySelector(`[data-add="${a.id}"]`); if(!cb)return;
+      cb.closest(".add").querySelector("[data-addcost]").textContent=fmt(a.cost*fx())+suffix;
+    } });
   const vt=document.getElementById("voltag"), dp=Math.round((1-one.mult)*100);
   vt.style.display=dp>0?"inline-flex":"none"; vt.textContent=dp>0?`−${dp}% volume rate at ${one.billUnits} ${p.unitp}`:"";
   document.getElementById("includeToggle").checked=state.included.has(state.product);
