@@ -695,7 +695,35 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
     ]}
   };
 })();
-const ORDER=["sales", "school", "hrms", "custom"];
+PRODUCTS.legal={name:"Legal Firm",unit:"user",unitp:"users",min:3,max:100,step:1,default:8,defaultTier:1,minMonthly:599,
+ headline:"Quote a law firm",unitNote:"Billed on fee-earners and staff using the system.",
+ subline:"Case management for Malaysian law firms — matters, clients, billing, documents and the court calendar in one system.",
+ bands:[],
+ tiers:[
+   {id:"standard",name:"Standard",tag:"Run your matters and clients end to end.",price:40,minMonthly:599},
+   {id:"professional",name:"Professional",tag:"Add full billing — quotations, invoices & payments.",price:52,minMonthly:799,pop:"Most popular"},
+   {id:"premium",name:"Premium",tag:"Add the document vault, court calendar & integrations.",price:70,minMonthly:1099}
+ ],
+ details:{
+   standard:{blurb:"Everything a firm needs to run its matters and clients — built around the Malaysian court structure.",groups:[
+     {h:"Cases & matters",items:["Matter setup — Civil, Criminal, Syariah, Native, Industrial","Cascading State → Type → Court picker (16 states & FTs)","Case list with search & filters (state / type / court / status)","Case detail, updates & role-gated delete","Every matter linked to its client"]},
+     {h:"Clients & prospects",items:["First-meeting intake (matter, notes, custom fields)","Issue a quotation on the spot","Convert prospect → client (everything carries over)","Client profiles with account strip (Quoted / Invoiced / Paid / Outstanding)"]},
+     {h:"Tasks, dashboard & access",items:["Per-case tasks + firm-wide Kanban (priorities, due dates)","KPI dashboard — case status, tasks, prospects vs clients","Firm-wide search (cases, tasks, contacts, documents)","Roles: admin / attorney / paralegal / staff · multi-firm isolation"]}
+   ]},
+   professional:{blurb:"Add end-to-end billing — turn matters into quotations, invoices and collected payments.",inherits:"Standard",groups:[
+     {h:"Billing & finance",items:["Line-item quotations & invoices (MYR)","Quotation → invoice in one click","Invoice lifecycle: draft → sent → paid / void","Record payments (against invoices or as advances)","Per-invoice & per-client outstanding balances","Firm billing dashboard — invoiced / collected / outstanding"]}
+   ]},
+   premium:{blurb:"The full firm platform — document vault, the court calendar and integrations on top of Professional.",inherits:"Professional",groups:[
+     {h:"Documents & court calendar",items:["Document vault per case & per client (admin-named types)","Google Drive storage option","Firm calendar — Day / Week / Month views","Court dates & meetings, assign a lawyer","Availability check & clash detection","Add to Google Calendar (.ics)"]},
+     {h:"Configure & integrate",items:["Custom required-documents per firm","Custom intake fields per firm","Google sign-in (OAuth) with secure sessions","Pluggable storage & database (Local / Drive · SQLite / Supabase)"]}
+   ]}
+ },
+ addons:[
+   {id:"setup",name:"Setup & data migration",desc:"Import matters, clients & documents",cost:2500,once:true},
+   {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1200,once:true,postDelivery:true}
+ ]
+};
+const ORDER=["sales", "school", "hrms", "legal", "custom"];
 // Live-demo sites (one-click persona login via ?demo). Add school/hrms when their demos are up.
 const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo" };
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
@@ -721,7 +749,7 @@ function bandMultFor(pid,u){ const b=PRODUCTS[pid].bands; if(!b.length) return 1
 const prodswitch=document.getElementById("prodswitch");
 ORDER.forEach((pid,i)=>{ const b=document.createElement("button"); b.dataset.p=pid; b.textContent=PRODUCTS[pid].name; b.setAttribute("aria-pressed", i===0); b.addEventListener("click",()=>loadProduct(pid)); prodswitch.appendChild(b); });
 
-const LICONS={sales:"📈",school:"🎓",hrms:"👥",custom:"🧩"};
+const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",custom:"🧩"};
 function buildLandingTiles(){
   const el=document.getElementById("lTiles"); el.innerHTML="";
   ORDER.forEach(pid=>{ const p=PRODUCTS[pid];
