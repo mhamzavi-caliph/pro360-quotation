@@ -695,14 +695,14 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
     ]}
   };
 })();
-PRODUCTS.legal={name:"Legal Firm",unit:"user",unitp:"users",min:3,max:100,step:1,default:8,defaultTier:1,minMonthly:599,
- headline:"Quote a law firm",unitNote:"Billed on fee-earners and staff using the system.",
+PRODUCTS.legal={name:"Legal Firm",flat:true,unit:"firm",unitp:"firms",min:1,max:1,step:1,default:1,defaultTier:1,
+ headline:"Quote a law firm",unitNote:"One flat monthly price per firm — any number of users included.",
  subline:"Case management for Malaysian law firms — matters, clients, billing, documents and the court calendar in one system.",
  bands:[],
  tiers:[
-   {id:"standard",name:"Standard",tag:"Matters, clients & documents — 25 GB storage.",price:40,minMonthly:599},
-   {id:"professional",name:"Professional",tag:"Add full billing; 100 GB document storage.",price:52,minMonthly:799,pop:"Most popular"},
-   {id:"premium",name:"Premium",tag:"Court calendar, integrations & your own Google Drive.",price:70,minMonthly:1099}
+   {id:"standard",name:"Standard",tag:"Matters, clients & documents — 25 GB storage.",price:599},
+   {id:"professional",name:"Professional",tag:"Add full billing; 100 GB document storage.",price:799,pop:"Most popular"},
+   {id:"premium",name:"Premium",tag:"Court calendar, integrations & your own Google Drive.",price:1099}
  ],
  details:{
    standard:{blurb:"Everything a firm needs to run its matters and clients — built around the Malaysian court structure.",groups:[
@@ -757,7 +757,7 @@ function buildLandingTiles(){
   const el=document.getElementById("lTiles"); el.innerHTML="";
   ORDER.forEach(pid=>{ const p=PRODUCTS[pid];
     const d=document.createElement("div"); d.className="l-tile"; d.setAttribute("role","button"); d.setAttribute("tabindex","0");
-    const meta = p.custom ? `${p.groups.reduce((n,g)=>n+g.items.length,0)} modules · à la carte · yearly` : `${p.tiers.length} packages · per ${p.unit}`;
+    const meta = p.custom ? `${p.groups.reduce((n,g)=>n+g.items.length,0)} modules · à la carte · yearly` : (p.flat ? `${p.tiers.length} packages · flat monthly` : `${p.tiers.length} packages · per ${p.unit}`);
     d.innerHTML=`<div class="ic">${LICONS[pid]||"•"}</div><h3>${p.name}</h3><p>${p.subline}</p><span class="meta">${meta}</span><span class="go">Start quote <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
     d.addEventListener("click",()=>startProduct(pid));
     d.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); startProduct(pid); } });
@@ -855,6 +855,7 @@ function applyProduct(pid){
   document.getElementById("unitword").textContent=p.unitp;
   const r=document.getElementById("range"); r.min=p.min; r.max=p.max; r.step=p.step;
   buildTiers(); buildAddons(); buildFineprint();
+  const _uf=document.querySelector(".ctrls .units"); if(_uf) _uf.style.display=p.flat?"none":"";
 }
 function loadProduct(pid){ applyProduct(pid); syncControls(); render(); }
 
@@ -864,7 +865,7 @@ function buildTiers(){
     const c=document.createElement("div"); c.className="tier"; c.dataset.id=t.id;
     c.setAttribute("role","button"); c.setAttribute("tabindex","0");
     c.innerHTML=`${t.pop?'<span class="pop">'+t.pop+'</span>':''}<h3>${t.name}</h3><p class="tag">${t.tag}</p>
-      <div class="price"><span class="cur-sym" data-sym></span><span class="amt" data-amt></span><span class="per">/${p.unit}/mo</span></div>
+      <div class="price"><span class="cur-sym" data-sym></span><span class="amt" data-amt></span><span class="per">${p.flat?"/mo":"/"+p.unit+"/mo"}</span></div>
       <div class="line-total" data-lt></div>
       <button class="tier-more" type="button" data-details>View all features <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="selbtn"><span data-sel></span></div>`;
@@ -905,8 +906,8 @@ function buildFineprint(){
   const p=P();
   const bandLi = p.bands.length ? `<li><b>Volume discount:</b> the per-${p.unit} rate steps down as ${p.unitp} grow (${p.bands.filter(b=>b.mult<1).map(b=>'−'+Math.round((1-b.mult)*100)+'%').join(', ')} at higher bands).</li>` : "";
   document.getElementById("fineprint").innerHTML=`<h4>How pricing works</h4><ul>
-    <li><b>Priced per ${p.unit} / month.</b> ${p.unitNote}</li>
-    <li><b>Minimum ${p.min} ${p.unitp}</b> per account.</li>
+    ${p.flat?`<li><b>One flat monthly price per firm.</b> ${p.unitNote}</li>`:`<li><b>Priced per ${p.unit} / month.</b> ${p.unitNote}</li>
+    <li><b>Minimum ${p.min} ${p.unitp}</b> per account.</li>`}
     ${p.minMonthly?`<li><b>Minimum from ${fmt(p.minMonthly*fx())}/month</b> — smaller ${p.unitp} counts are charged a monthly floor${p.tiers.some(t=>t.minMonthly!=null)?"; higher plans have a higher minimum":""}.</li>`:""}
     ${bandLi}
     <li><b>Customer taking more than one product?</b> Tick “Include … in this quotation” on each — the quote and totals combine them.</li>
@@ -1032,7 +1033,7 @@ function render(){
     card.querySelector("[data-sym]").textContent=sym();
     card.querySelector("[data-amt]").textContent=rateStr(t.price*fx()*one.mult);
     let ltm=t.price*fx()*one.mult*one.billUnits; const flr=(t.minMonthly!=null?t.minMonthly:(p.minMonthly||0))*fx(); const isMin=ltm<flr; if(isMin)ltm=flr;
-    card.querySelector("[data-lt]").textContent=`≈ ${fmt(ltm)}/mo${isMin?" · min":""}`;
+    card.querySelector("[data-lt]").textContent=p.flat?"flat · any team size":`≈ ${fmt(ltm)}/mo${isMin?" · min":""}`;
     card.querySelector("[data-sel]").textContent=t.id===c.tier?"✓ Selected":"Select";
   });
   p.addons.forEach(a=>{ const suffix=a.once?"":(a.period==="year"?"/yr":"/mo");
@@ -1129,7 +1130,7 @@ function buildCompare(){
     g.items.forEach(it=>{ if(!cat.items.some(x=>x.name===it)) cat.items.push({name:it,intro:ti}); });
   }); });
   let html=`<div class="cmp-wrap"><table class="cmp"><thead><tr><th>Feature</th>${tiers.map((t,i)=>`<th class="plan ${i===curIdx?'cur colcur':''}">${t.name}${t.pop?'<small>'+t.pop+'</small>':''}</th>`).join("")}</tr>`;
-  html+=`<tr class="price-row"><td>Price</td>${tiers.map((t,i)=>`<td class="${i===curIdx?'colcur':''}">${sym()} ${rateStr(t.price*fxr)}<small>/${p.unit}/mo</small></td>`).join("")}</tr></thead><tbody>`;
+  html+=`<tr class="price-row"><td>Price</td>${tiers.map((t,i)=>`<td class="${i===curIdx?'colcur':''}">${sym()} ${rateStr(t.price*fxr)}<small>${p.flat?"/mo":"/"+p.unit+"/mo"}</small></td>`).join("")}</tr></thead><tbody>`;
   cats.forEach(cat=>{
     html+=`<tr class="cat"><td colspan="${tiers.length+1}">${cat.h}</td></tr>`;
     cat.items.forEach(it=>{ html+=`<tr><td class="feat">${it.name}</td>${tiers.map((t,i)=>`<td class="c ${i===curIdx?'colcur':''}">${i>=it.intro?'<span class="yes">'+CHECK+'</span>':'<span class="no">–</span>'}</td>`).join("")}</tr>`; });
@@ -1258,7 +1259,8 @@ function buildQuote(){
     }
     rows.push(`<tr class="grp"><td colspan="3">${p.name} · ${c.t.name} · billed ${c.annual?"annually":"monthly"}</td></tr>`);
     const rl=c.mult<1?`${fmt(c.perUnit)}/${p.unit} (−${Math.round((1-c.mult)*100)}%)`:`${fmt(c.perUnit)}/${p.unit}`;
-    rows.push(`<tr><td>${c.t.name} — subscription</td><td class="r">${c.floored?"minimum · "+c.billUnits+" "+p.unitp:rl+" × "+c.billUnits+(c.annual?" × "+ANNUAL_MONTHS+"mo":"")}</td><td class="r">${fmt(c.seatsBilled)}</td></tr>`);
+    const _mid=p.flat?("flat monthly"+(c.annual?" × "+ANNUAL_MONTHS+"mo":"")):(c.floored?"minimum · "+c.billUnits+" "+p.unitp:rl+" × "+c.billUnits+(c.annual?" × "+ANNUAL_MONTHS+"mo":""));
+    rows.push(`<tr><td>${c.t.name} — subscription</td><td class="r">${_mid}</td><td class="r">${fmt(c.seatsBilled)}</td></tr>`);
     c.addOn.forEach(a=>rows.push(`<tr><td>+ ${a.name}</td><td class="r">${fmt(a.amt)}/mo${c.annual?" × "+ANNUAL_MONTHS+"mo":""}</td><td class="r">${fmt(a.amt*mult)}</td></tr>`));
     c.addYear.forEach(a=>rows.push(`<tr><td>+ ${a.name}</td><td class="r">billed yearly</td><td class="r">${fmt(a.amt)}/yr</td></tr>`));
     c.addOnce.forEach(a=>rows.push(`<tr><td>+ ${a.name}</td><td class="r">one-time</td><td class="r">${fmt(a.amt)}</td></tr>`));
@@ -1304,7 +1306,7 @@ function quoteLines(all){
       return;
     }
     const subAmt=all.annual?c.seatsBilled:c.seats;
-    lines.push({ sku:("QS-"+pid+"-"+state.cfg[pid].tier).toUpperCase(), description:`${p.name} — ${c.t.name} · ${c.billUnits} ${p.unitp} · ${cyc}${c.mult<1?" (−"+Math.round((1-c.mult)*100)+"%)":""}${c.floored?" · minimum monthly":""}`, qty:1, unit_price:round2(subAmt), line_total:round2(subAmt) });
+    lines.push({ sku:("QS-"+pid+"-"+state.cfg[pid].tier).toUpperCase(), description:(p.flat?`${p.name} — ${c.t.name} · flat · ${cyc}`:`${p.name} — ${c.t.name} · ${c.billUnits} ${p.unitp} · ${cyc}${c.mult<1?" (−"+Math.round((1-c.mult)*100)+"%)":""}${c.floored?" · minimum monthly":""}`), qty:1, unit_price:round2(subAmt), line_total:round2(subAmt) });
     c.addOn.forEach(a=>lines.push({ description:`${p.name} · ${a.name} (recurring, ${cyc})`, qty:1, unit_price:round2(all.annual?a.amt*ANNUAL_MONTHS:a.amt), line_total:round2(all.annual?a.amt*ANNUAL_MONTHS:a.amt) }));
     c.addYear.forEach(a=>lines.push({ description:`${p.name} · ${a.name} (yearly)`, qty:1, unit_price:round2(a.amt), line_total:round2(a.amt) }));
     c.addOnce.forEach(a=>lines.push({ description:`${p.name} · ${a.name}${a.post?" (after delivery)":" (one-time)"}`, qty:1, unit_price:round2(a.amt), line_total:round2(a.amt) }));
