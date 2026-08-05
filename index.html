@@ -700,21 +700,23 @@ PRODUCTS.legal={name:"Legal Firm",unit:"user",unitp:"users",min:3,max:100,step:1
  subline:"Case management for Malaysian law firms — matters, clients, billing, documents and the court calendar in one system.",
  bands:[],
  tiers:[
-   {id:"standard",name:"Standard",tag:"Run your matters and clients end to end.",price:40,minMonthly:599},
-   {id:"professional",name:"Professional",tag:"Add full billing — quotations, invoices & payments.",price:52,minMonthly:799,pop:"Most popular"},
-   {id:"premium",name:"Premium",tag:"Add the document vault, court calendar & integrations.",price:70,minMonthly:1099}
+   {id:"standard",name:"Standard",tag:"Matters, clients & documents — 25 GB storage.",price:40,minMonthly:599},
+   {id:"professional",name:"Professional",tag:"Add full billing; 100 GB document storage.",price:52,minMonthly:799,pop:"Most popular"},
+   {id:"premium",name:"Premium",tag:"Court calendar, integrations & your own Google Drive.",price:70,minMonthly:1099}
  ],
  details:{
    standard:{blurb:"Everything a firm needs to run its matters and clients — built around the Malaysian court structure.",groups:[
      {h:"Cases & matters",items:["Matter setup — Civil, Criminal, Syariah, Native, Industrial","Cascading State → Type → Court picker (16 states & FTs)","Case list with search & filters (state / type / court / status)","Case detail, updates & role-gated delete","Every matter linked to its client"]},
      {h:"Clients & prospects",items:["First-meeting intake (matter, notes, custom fields)","Issue a quotation on the spot","Convert prospect → client (everything carries over)","Client profiles with account strip (Quoted / Invoiced / Paid / Outstanding)"]},
+     {h:"Documents & files",items:["Document vault per case & client (admin-named types)","Upload / download / delete files","25 GB document storage included"]},
      {h:"Tasks, dashboard & access",items:["Per-case tasks + firm-wide Kanban (priorities, due dates)","KPI dashboard — case status, tasks, prospects vs clients","Firm-wide search (cases, tasks, contacts, documents)","Roles: admin / attorney / paralegal / staff · multi-firm isolation"]}
    ]},
-   professional:{blurb:"Add end-to-end billing — turn matters into quotations, invoices and collected payments.",inherits:"Standard",groups:[
-     {h:"Billing & finance",items:["Line-item quotations & invoices (MYR)","Quotation → invoice in one click","Invoice lifecycle: draft → sent → paid / void","Record payments (against invoices or as advances)","Per-invoice & per-client outstanding balances","Firm billing dashboard — invoiced / collected / outstanding"]}
+   professional:{blurb:"Add end-to-end billing — turn matters into quotations, invoices and collected payments — with more document storage.",inherits:"Standard",groups:[
+     {h:"Billing & finance",items:["Line-item quotations & invoices (MYR)","Quotation → invoice in one click","Invoice lifecycle: draft → sent → paid / void","Record payments (against invoices or as advances)","Per-invoice & per-client outstanding balances","Firm billing dashboard — invoiced / collected / outstanding"]},
+     {h:"Storage",items:["Document storage upgraded to 100 GB"]}
    ]},
    premium:{blurb:"The full firm platform — document vault, the court calendar and integrations on top of Professional.",inherits:"Professional",groups:[
-     {h:"Documents & court calendar",items:["Document vault per case & per client (admin-named types)","Google Drive storage option","Firm calendar — Day / Week / Month views","Court dates & meetings, assign a lawyer","Availability check & clash detection","Add to Google Calendar (.ics)"]},
+     {h:"Documents & court calendar",items:["Connect your own Google Drive — unlimited storage","Firm calendar — Day / Week / Month views","Court dates & meetings, assign a lawyer","Availability check & clash detection","Add to Google Calendar (.ics)"]},
      {h:"Configure & integrate",items:["Custom required-documents per firm","Custom intake fields per firm","Google sign-in (OAuth) with secure sessions","Pluggable storage & database (Local / Drive · SQLite / Supabase)"]}
    ]}
  },
