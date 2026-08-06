@@ -393,7 +393,6 @@
   <h1 id="headline"></h1>
   <p class="sub" id="subline"></p>
   <a id="demoBtn" class="pdfbtn ghost" href="#" target="_blank" rel="noopener" style="display:none;margin:12px 0 0;text-decoration:none"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="2.1" stroke="currentColor" stroke-width="1.4"/></svg> Try the live demo ↗</a>
-  <button id="demoLinkInline" class="pdfbtn ghost" type="button" style="display:none;margin:12px 0 0 8px">🔗 Get demo link</button>
 
   <div class="ctrls">
     <div class="field units">
@@ -924,7 +923,6 @@ function applyProduct(pid){
   document.getElementById("headline").textContent=p.headline;
   document.getElementById("subline").textContent=p.subline;
   const db=document.getElementById("demoBtn"); if(db){ if(DEMO_URLS[pid]){ db.href=DEMO_URLS[pid]; db.style.display="inline-flex"; } else { db.style.display="none"; } }
-  const dli=document.getElementById("demoLinkInline"); if(dli){ if(DEMO_URLS[pid]){ dli.dataset.pid=pid; dli.style.display="inline-flex"; } else { dli.style.display="none"; } }
   setCustomUI(!!p.custom);
   if(p.custom){ state.included.clear(); state.cycle="annual"; buildModules();
     document.getElementById("fineprint").innerHTML=`<h4>How custom pricing works</h4><ul><li><b>Pick the product type</b> (General, Sales, School or HRMS) — the module list and the head unit follow the type.</li><li><b>Tick only what the customer needs</b> — features appear as you tick, and the price updates instantly.</li><li><b>Two ways to price:</b> <b>Flat annual</b> (fixed yearly licence, min ${fmt((p.minAnnual||0)*fx())}/yr) or <b>Per head</b> (School = per student, min 50; others = per staff, min 20).</li><li><b>Licensed yearly.</b> No monthly option for custom builds.</li><li><b>Setup, delivery &amp; onboarding</b> is billed once (10% on confirmation / 40% on 1st draft / balance on delivery).</li><li><b>Need something not listed?</b> Note it in the customer details and we'll scope it.</li></ul>`;
@@ -1583,7 +1581,6 @@ function openDemoLink(preselect){ if(preselect&&DEMO_LINK_BASES[preselect]) docu
 function closeDemoLink(){ dlModal.classList.remove("open"); document.body.classList.remove("locked"); }
 document.getElementById("demoLinkBtn").addEventListener("click",()=>openDemoLink());
 document.getElementById("landingDemoLink").addEventListener("click",()=>openDemoLink());
-document.getElementById("demoLinkInline").addEventListener("click",e=>openDemoLink(e.currentTarget.dataset.pid));
 document.getElementById("dlClose").addEventListener("click",closeDemoLink);
 dlModal.querySelector("[data-closedl]").addEventListener("click",closeDemoLink);
 document.getElementById("dlProd").addEventListener("change",dlRefresh);
