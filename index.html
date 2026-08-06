@@ -726,7 +726,43 @@ PRODUCTS.legal={name:"Legal Firm",flat:true,unit:"firm",unitp:"firms",min:1,max:
    {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1200,once:true,postDelivery:true}
  ]
 };
-const ORDER=["sales", "school", "hrms", "legal", "custom"];
+PRODUCTS.accounting={name:"Accounting",flat:true,unit:"company",unitp:"companies",min:1,max:1,step:1,default:1,defaultTier:1,
+ headline:"Quote cloud accounting",unitNote:"One flat monthly price per company — unlimited users.",
+ subline:"Cloud accounting for Malaysian businesses — invoicing, bills, inventory, SST and financial reports in one place.",
+ bands:[],
+ tiers:[
+   {id:"starter",name:"Starter",tag:"Invoicing, bills & the essentials — 2 GB.",price:28},
+   {id:"business",name:"Business",tag:"Add full accounting, inventory & reports — 5 GB.",price:52,pop:"Most popular"},
+   {id:"premium",name:"Premium",tag:"Add automation, bank feeds & multi-currency — 20 GB.",price:76},
+   {id:"enterprise",name:"Enterprise",tag:"Multi-company, integrations & priority SLA — 40 GB.",price:108}
+ ],
+ details:{
+   starter:{blurb:"Everything a small business needs to invoice, record bills and see where the money is.",groups:[
+     {h:"Sales & invoicing",items:["Quotations & sales orders","Invoices with SST","Delivery orders","Credit notes","Customer payments & refunds"]},
+     {h:"Purchases & contacts",items:["Bills & purchase documents","Customers, suppliers & employees","Products & services catalogue"]},
+     {h:"Dashboard & basics",items:["Dashboard — KPIs, cash-flow & ageing","2 GB document storage","Unlimited users","Private, isolated company data"]}
+   ]},
+   business:{blurb:"Turn on the accounting engine, stock control and financial statements.",inherits:"Starter",groups:[
+     {h:"Accounting",items:["Chart of accounts","Journals & manual entries","Tax codes (SST)","Bank & cash accounts"]},
+     {h:"Inventory",items:["Stock items & levels","Low-stock flags","Stock movements"]},
+     {h:"Reporting & storage",items:["Financial reports — Profit & Loss, Balance Sheet","Aged receivables / payables","5 GB document storage"]}
+   ]},
+   premium:{blurb:"Automate the busywork — capture receipts, reconcile the bank and handle foreign currency.",inherits:"Business",groups:[
+     {h:"Automation",items:["Digital Shoebox — receipt & document capture","Bank reconciliation","Recurring invoices & bills"]},
+     {h:"Advanced",items:["Multi-currency","Custom document numbering","20 GB document storage"]}
+   ]},
+   enterprise:{blurb:"Run many companies from one console, with integrations and priority service.",inherits:"Premium",groups:[
+     {h:"Scale & governance",items:["Multi-company console","Marketplace & integrations","Advanced reports & audit trail","User roles & permissions"]},
+     {h:"Storage & service",items:["40 GB document storage","Priority support & SLA","Guided setup & migration"]}
+   ]}
+ },
+ addons:[
+   {id:"storage",name:"Extra storage — +10 GB",desc:"Additional file-storage pack",cost:4,once:false,qty:true},
+   {id:"setup",name:"Setup & data migration",desc:"Import accounts & opening balances",cost:1500,once:true},
+   {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1000,once:true,postDelivery:true}
+ ]
+};
+const ORDER=["sales", "school", "hrms", "legal", "accounting", "custom"];
 // Live-demo sites (one-click persona login via ?demo). Add school/hrms when their demos are up.
 const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo" };
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
@@ -752,7 +788,7 @@ function bandMultFor(pid,u){ const b=PRODUCTS[pid].bands; if(!b.length) return 1
 const prodswitch=document.getElementById("prodswitch");
 ORDER.forEach((pid,i)=>{ const b=document.createElement("button"); b.dataset.p=pid; b.textContent=PRODUCTS[pid].name; b.setAttribute("aria-pressed", i===0); b.addEventListener("click",()=>loadProduct(pid)); prodswitch.appendChild(b); });
 
-const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",custom:"🧩"};
+const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",accounting:"📒",custom:"🧩"};
 function buildLandingTiles(){
   const el=document.getElementById("lTiles"); el.innerHTML="";
   ORDER.forEach(pid=>{ const p=PRODUCTS[pid];
