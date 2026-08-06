@@ -362,6 +362,7 @@
     <p class="l-sub">Choose a product to start — or reopen a saved quotation. You can combine more than one product into a single quote.</p>
     <div class="l-tiles" id="lTiles"></div>
     <button class="l-saved" id="landingSaved"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h7l3 3v7H3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5 3v3h5" stroke="currentColor" stroke-width="1.4"/></svg> Saved quotes (<span id="savedCountL">0</span>)</button>
+    <button class="l-saved" id="landingDemoLink" style="margin-left:10px">🔗 Demo link</button>
     <a class="l-saved" href="https://finance.pro360.technology" target="_blank" rel="noopener" style="margin-left:10px;text-decoration:none"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 6l6-3 6 3M3 6v7h10V6M6 13V9h4v4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg> Finance ↗</a>
     <button class="l-saved" id="landingLogout" style="margin-left:10px"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Sign out</button>
   </div>
@@ -377,6 +378,7 @@
       <span class="sys">Quotation System</span>
       <button class="toolbtn" id="homeBtn"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2L2 7v7h4v-4h4v4h4V7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg> Home</button>
       <button class="toolbtn" id="savedOpen"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h7l3 3v7H3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5 3v3h5" stroke="currentColor" stroke-width="1.4"/></svg> Saved quotes (<span id="savedCount">0</span>)</button>
+      <button class="toolbtn" id="demoLinkBtn" title="Generate a self-expiring demo link for a prospect">🔗 Demo link</button>
       <span class="whoami" id="whoami"></span>
       <a class="toolbtn" href="https://finance.pro360.technology" target="_blank" rel="noopener">Finance ↗</a>
       <button class="toolbtn" id="pwBtn" title="Change password">🔑</button>
@@ -532,6 +534,43 @@
       <p class="pw-msg" id="pwMsg"></p>
     </div>
     <div class="modal-foot"><span class="fnote">Minimum 6 characters.</span><button class="pick" id="pwSave" type="button">Update password</button></div>
+  </div>
+</div>
+
+<div class="modal" id="demoLinkModal" role="dialog" aria-modal="true">
+  <div class="modal-back" data-closedl></div>
+  <div class="modal-panel" style="max-width:540px">
+    <button class="modal-close" id="dlClose" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <div class="modal-head" style="padding:26px 28px 0"><h3 class="mp-name" style="margin:0;font-size:19px;color:var(--ink)">🔗 Demo link</h3><p class="mp-tag" style="margin:4px 0 0;color:var(--ink-faint);font-size:13px">Generate a self-expiring link to send a prospect — no login, stops working after the time you set.</p></div>
+    <div class="modal-body" style="padding:22px 28px 28px">
+      <label style="display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin:0 0 6px">Product</label>
+      <select id="dlProd" style="width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)">
+        <option value="sales">Sales Platform</option>
+        <option value="school">School System</option>
+        <option value="hrms">HRMS &amp; Payroll</option>
+        <option value="legal">Legal Firm</option>
+        <option value="accounting">Accounting</option>
+      </select>
+      <label style="display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin:16px 0 6px">Expires at</label>
+      <input id="dlExp" type="datetime-local" style="width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)">
+      <div id="dlQuick" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <button type="button" class="l-saved" data-days="1">+1 day</button>
+        <button type="button" class="l-saved" data-days="3">+3 days</button>
+        <button type="button" class="l-saved" data-days="7">+7 days</button>
+        <button type="button" class="l-saved" data-days="14">+14 days</button>
+        <button type="button" class="l-saved" data-days="30">+30 days</button>
+      </div>
+      <div style="margin-top:18px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px">
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin-bottom:6px">Share this link</div>
+        <div id="dlLink" style="font-size:12.5px;word-break:break-all;color:var(--accent-deep);font-weight:600;line-height:1.5">…</div>
+        <div id="dlExpText" style="margin-top:6px;font-size:12px;color:var(--ink-faint)"></div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button type="button" class="l-saved" id="dlCopy" style="background:var(--accent);color:#fff;border-color:var(--accent);font-weight:800">Copy link</button>
+          <button type="button" class="l-saved" id="dlOpen">Open to test</button>
+        </div>
+      </div>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:14px 0 0;line-height:1.5">The check runs in the browser, so it deters casual over-use and sharing; the demos hold only sample, self-resetting data. Your quote “Live demo” buttons never expire.</p>
+    </div>
   </div>
 </div>
 
@@ -1530,7 +1569,27 @@ function setupAuth(){
 document.getElementById("homeBtn").addEventListener("click",showLanding);
 document.getElementById("landingSaved").addEventListener("click",openSaved);
 document.getElementById("landingLogout").addEventListener("click", async ()=>{ if(sb) await sb.auth.signOut(); boot(null); });
+
+/* ---- Demo link generator (self-expiring signed links) ---- */
+const DEMO_LINK_SECRET="80849e24c8f67b06bb00091ad8ade51212197561d65e8139";
+const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/"};
+async function dlSig(msg){ const enc=new TextEncoder(); const k=await crypto.subtle.importKey("raw",enc.encode(DEMO_LINK_SECRET),{name:"HMAC",hash:"SHA-256"},false,["sign"]); const s=await crypto.subtle.sign("HMAC",k,enc.encode(String(msg))); return [...new Uint8Array(s)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,16); }
+function dlFmt(d){ const p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
+const dlModal=document.getElementById("demoLinkModal");
+async function dlRefresh(){ const base=DEMO_LINK_BASES[document.getElementById("dlProd").value]; const val=document.getElementById("dlExp").value; const out=document.getElementById("dlLink"); if(!val){ out.textContent="Pick an expiry…"; out.dataset.url=""; document.getElementById("dlExpText").textContent=""; return; } const exp=Math.floor(new Date(val).getTime()/1000); const sig=await dlSig(exp); const url=base+(base.includes("?")?"&":"?")+"exp="+exp+"&sig="+sig; out.textContent=url; out.dataset.url=url; document.getElementById("dlExpText").textContent="Expires: "+new Date(exp*1000).toLocaleString(); }
+function openDemoLink(){ const exp=document.getElementById("dlExp"); if(!exp.value){ const d=new Date(Date.now()+14*864e5); d.setSeconds(0,0); exp.value=dlFmt(d); } dlModal.classList.add("open"); document.body.classList.add("locked"); dlRefresh(); }
+function closeDemoLink(){ dlModal.classList.remove("open"); document.body.classList.remove("locked"); }
+document.getElementById("demoLinkBtn").addEventListener("click",openDemoLink);
+document.getElementById("landingDemoLink").addEventListener("click",openDemoLink);
+document.getElementById("dlClose").addEventListener("click",closeDemoLink);
+dlModal.querySelector("[data-closedl]").addEventListener("click",closeDemoLink);
+document.getElementById("dlProd").addEventListener("change",dlRefresh);
+document.getElementById("dlExp").addEventListener("input",dlRefresh);
+document.getElementById("dlQuick").addEventListener("click",e=>{ const b=e.target.closest("[data-days]"); if(!b)return; const d=new Date(Date.now()+Number(b.dataset.days)*864e5); d.setSeconds(0,0); document.getElementById("dlExp").value=dlFmt(d); dlRefresh(); });
+document.getElementById("dlCopy").addEventListener("click",async()=>{ const b=document.getElementById("dlCopy"); const u=document.getElementById("dlLink").dataset.url||""; if(!u)return; try{ await navigator.clipboard.writeText(u); b.textContent="Copied ✓"; setTimeout(()=>b.textContent="Copy link",1500);}catch(e){ b.textContent="Copy failed"; } });
+document.getElementById("dlOpen").addEventListener("click",()=>{ const u=document.getElementById("dlLink").dataset.url; if(u)window.open(u,"_blank"); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&savedModal.classList.contains("open"))closeSaved(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&dlModal.classList.contains("open"))closeDemoLink(); });
 
 buildLandingTiles();
 (function(){ let m="dark"; try{ m=localStorage.getItem("pro360-quote-theme")||"dark"; }catch(e){} document.documentElement.setAttribute("data-theme",m);
