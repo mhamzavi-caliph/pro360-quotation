@@ -550,6 +550,7 @@
         <option value="hrms">HRMS &amp; Payroll</option>
         <option value="legal">Legal Firm</option>
         <option value="accounting">Accounting</option>
+        <option value="inventory">Inventory</option>
       </select>
       <label style="display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin:16px 0 6px">Expires at</label>
       <input id="dlExp" type="datetime-local" style="width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)">
@@ -801,9 +802,46 @@ PRODUCTS.accounting={name:"Accounting",flat:true,unit:"company",unitp:"companies
    {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1000,once:true,postDelivery:true}
  ]
 };
-const ORDER=["sales", "school", "hrms", "legal", "accounting", "custom"];
+PRODUCTS.inventory={name:"Inventory",flat:true,unit:"company",unitp:"companies",min:1,max:1,step:1,default:1,defaultTier:1,
+ headline:"Quote inventory control",unitNote:"One flat monthly price per company — unlimited users & outlet logins.",
+ subline:"Retail & stock control for Malaysian SMEs — products, purchasing, multi-outlet transfers, demand forecasting and marketplace sync in one place.",
+ bands:[],
+ tiers:[
+   {id:"starter",name:"Starter",tag:"Products, purchasing & low-stock alerts — 1 outlet.",price:49},
+   {id:"growth",name:"Growth",tag:"Add multi-outlet transfers, reorder & counts — up to 3 outlets.",price:99,pop:"Most popular"},
+   {id:"business",name:"Business",tag:"Add demand forecast & marketplace sync — up to 10 outlets.",price:179},
+   {id:"enterprise",name:"Enterprise",tag:"Unlimited outlets, integrations & priority SLA.",price:299}
+ ],
+ details:{
+   starter:{blurb:"Get stock under control — products, suppliers, purchasing and low-stock alerts for a single outlet.",groups:[
+     {h:"Products & catalogue",items:["Products & SKUs","Categories & variants","Barcode lookup","Cost & sell pricing","Opening-stock import"]},
+     {h:"Purchasing & suppliers",items:["Supplier records","Purchase orders","Goods received & stock-in","PO status tracking"]},
+     {h:"Stock & dashboard",items:["Stock in / out movements","Low-stock alerts","Single outlet","Dashboard — stock value & KPIs","Unlimited users","Private, isolated company data"]}
+   ]},
+   growth:{blurb:"Run several outlets — transfers, reorder points and stock counts, with reporting.",inherits:"Starter",groups:[
+     {h:"Multi-outlet",items:["Up to 3 outlets","Stock transfers between outlets","Per-outlet stock levels"]},
+     {h:"Replenishment",items:["Reorder points & suggestions","Batch & expiry tracking","Stock counts / stock-take","Adjustments with reasons"]},
+     {h:"Reporting",items:["Stock movement & valuation reports","Purchase & supplier reports","Fast / slow-moving items"]}
+   ]},
+   business:{blurb:"Add forecasting and connect your online sales channels.",inherits:"Growth",groups:[
+     {h:"Demand forecast",items:["Demand forecasting","Auto reorder planning","Seasonality insights"]},
+     {h:"Sales channels",items:["Marketplace sync (Shopee, Lazada, TikTok)","Channel stock allocation","Online + offline in one view"]},
+     {h:"Scale",items:["Up to 10 outlets","Advanced analytics","Purchase planning"]}
+   ]},
+   enterprise:{blurb:"Everything, for retail groups — unlimited outlets, integrations and priority service.",inherits:"Business",groups:[
+     {h:"Scale & governance",items:["Unlimited outlets & warehouses","User roles & permissions","API & integrations","Audit trail"]},
+     {h:"Service",items:["Priority support & SLA","Guided setup & migration","Dedicated data isolation"]}
+   ]}
+ },
+ addons:[
+   {id:"setup",name:"Setup & data migration",desc:"Import products, suppliers & opening stock",cost:1500,once:true},
+   {id:"channels",name:"Marketplace connector setup",desc:"Connect Shopee / Lazada / TikTok",cost:800,once:true},
+   {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1000,once:true,postDelivery:true}
+ ]
+};
+const ORDER=["sales", "school", "hrms", "legal", "accounting", "inventory", "custom"];
 // Live-demo sites (one-click persona login via ?demo). Add school/hrms when their demos are up.
-const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo", accounting:"https://pro360-accounting-demo.onrender.com" };
+const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo", accounting:"https://pro360-accounting-demo.onrender.com", inventory:"https://pro360-inventory.onrender.com/" };
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
 const TAX_PCT=8;
@@ -827,7 +865,7 @@ function bandMultFor(pid,u){ const b=PRODUCTS[pid].bands; if(!b.length) return 1
 const prodswitch=document.getElementById("prodswitch");
 ORDER.forEach((pid,i)=>{ const b=document.createElement("button"); b.dataset.p=pid; b.textContent=PRODUCTS[pid].name; b.setAttribute("aria-pressed", i===0); b.addEventListener("click",()=>loadProduct(pid)); prodswitch.appendChild(b); });
 
-const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",accounting:"📒",custom:"🧩"};
+const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",accounting:"📒",inventory:"📦",custom:"🧩"};
 function buildLandingTiles(){
   const el=document.getElementById("lTiles"); el.innerHTML="";
   ORDER.forEach(pid=>{ const p=PRODUCTS[pid];
@@ -1572,7 +1610,7 @@ document.getElementById("landingLogout").addEventListener("click", async ()=>{ i
 
 /* ---- Demo link generator (self-expiring signed links) ---- */
 const DEMO_LINK_SECRET="80849e24c8f67b06bb00091ad8ade51212197561d65e8139";
-const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/"};
+const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/",inventory:"https://pro360-inventory.onrender.com/"};
 async function dlSig(msg){ const enc=new TextEncoder(); const k=await crypto.subtle.importKey("raw",enc.encode(DEMO_LINK_SECRET),{name:"HMAC",hash:"SHA-256"},false,["sign"]); const s=await crypto.subtle.sign("HMAC",k,enc.encode(String(msg))); return [...new Uint8Array(s)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,16); }
 function dlFmt(d){ const p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
 const dlModal=document.getElementById("demoLinkModal");
