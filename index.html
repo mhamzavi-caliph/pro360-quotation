@@ -551,6 +551,7 @@
         <option value="legal">Legal Firm</option>
         <option value="accounting">Accounting</option>
         <option value="inventory">Inventory</option>
+        <option value="pos">Point of Sale</option>
       </select>
       <label style="display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin:16px 0 6px">Expires at</label>
       <input id="dlExp" type="datetime-local" style="width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)">
@@ -839,9 +840,46 @@ PRODUCTS.inventory={name:"Inventory",flat:true,unit:"company",unitp:"companies",
    {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1000,once:true,postDelivery:true}
  ]
 };
-const ORDER=["sales", "school", "hrms", "legal", "accounting", "inventory", "custom"];
+PRODUCTS.pos={name:"Point of Sale",flat:true,unit:"company",unitp:"companies",min:1,max:1,step:1,default:1,defaultTier:1,
+ headline:"Quote the POS",unitNote:"One flat monthly price per business — unlimited cashiers & stores.",
+ subline:"Point-of-sale for Malaysian retail & convenience stores — fast checkout, inventory, loyalty, SST e-invoice and multi-store reporting.",
+ bands:[],
+ tiers:[
+   {id:"starter",name:"Starter",tag:"Fast checkout, products & receipts — 1 outlet.",price:69},
+   {id:"growth",name:"Growth",tag:"Add shifts, suppliers, promotions & stock — up to 3 outlets.",price:139,pop:"Most popular"},
+   {id:"business",name:"Business",tag:"Add loyalty, e-invoice & multi-store reports — up to 10 outlets.",price:249},
+   {id:"enterprise",name:"Enterprise",tag:"Unlimited outlets, integrations & priority SLA.",price:399}
+ ],
+ details:{
+   starter:{blurb:"Open the till and start selling — checkout, products, receipts and SST from day one.",groups:[
+     {h:"Checkout & sales",items:["Touch cashier / POS","Barcode scan & lookup","Cash & e-wallet payments","Printed & PDF receipts","SST tax on receipts","Daily sales summary"]},
+     {h:"Products & stock",items:["Products & categories","Price & cost management","Basic stock levels","Low-stock alerts"]},
+     {h:"Store & access",items:["Single outlet","Owner & cashier roles","Private, isolated store data"]}
+   ]},
+   growth:{blurb:"Run the shop properly — shifts, purchasing, promotions and stock across a few outlets.",inherits:"Starter",groups:[
+     {h:"Shifts & cash",items:["Cashier shifts & clock-in","Cash-up / drawer reconciliation","Z-reports"]},
+     {h:"Purchasing",items:["Suppliers","Purchase orders & goods-in","Up to 3 outlets"]},
+     {h:"Promotions",items:["Discounts & promotions","Bundle / combo pricing","Price overrides with approval"]}
+   ]},
+   business:{blurb:"Grow the customer base and go multi-store, with e-invoice compliance built in.",inherits:"Growth",groups:[
+     {h:"Loyalty & members",items:["Member registration","Points & rewards","Member pricing"]},
+     {h:"Compliance & channels",items:["SST e-Invoice (MyInvois-ready)","Consolidated e-invoice","Tax reports"]},
+     {h:"Multi-store",items:["Up to 10 outlets","Multi-store dashboard","Advanced sales & margin reports"]}
+   ]},
+   enterprise:{blurb:"Everything, for retail chains — unlimited outlets, integrations and priority service.",inherits:"Business",groups:[
+     {h:"Scale & governance",items:["Unlimited outlets","User roles & permissions","API & integrations","Audit trail"]},
+     {h:"Service",items:["Priority support & SLA","Guided setup & migration","Dedicated data isolation"]}
+   ]}
+ },
+ addons:[
+   {id:"setup",name:"Setup & data migration",desc:"Import products, prices & opening stock",cost:1500,once:true},
+   {id:"hardware",name:"POS hardware bundle",desc:"Receipt printer, scanner & cash drawer",cost:1800,once:true},
+   {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1000,once:true,postDelivery:true}
+ ]
+};
+const ORDER=["sales", "school", "hrms", "legal", "accounting", "inventory", "pos", "custom"];
 // Live-demo sites (one-click persona login via ?demo). Add school/hrms when their demos are up.
-const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo", accounting:"https://pro360-accounting-demo.onrender.com", inventory:"https://pro360-inventory-demo.onrender.com/" };
+const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo", accounting:"https://pro360-accounting-demo.onrender.com", inventory:"https://pro360-inventory-demo.onrender.com/", pos:"https://pro360-store-sg.onrender.com/" };
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
 const TAX_PCT=8;
@@ -865,7 +903,7 @@ function bandMultFor(pid,u){ const b=PRODUCTS[pid].bands; if(!b.length) return 1
 const prodswitch=document.getElementById("prodswitch");
 ORDER.forEach((pid,i)=>{ const b=document.createElement("button"); b.dataset.p=pid; b.textContent=PRODUCTS[pid].name; b.setAttribute("aria-pressed", i===0); b.addEventListener("click",()=>loadProduct(pid)); prodswitch.appendChild(b); });
 
-const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",accounting:"📒",inventory:"📦",custom:"🧩"};
+const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",accounting:"📒",inventory:"📦",pos:"🛒",custom:"🧩"};
 function buildLandingTiles(){
   const el=document.getElementById("lTiles"); el.innerHTML="";
   ORDER.forEach(pid=>{ const p=PRODUCTS[pid];
@@ -1610,7 +1648,7 @@ document.getElementById("landingLogout").addEventListener("click", async ()=>{ i
 
 /* ---- Demo link generator (self-expiring signed links) ---- */
 const DEMO_LINK_SECRET="80849e24c8f67b06bb00091ad8ade51212197561d65e8139";
-const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/",inventory:"https://pro360-inventory-demo.onrender.com/"};
+const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/",inventory:"https://pro360-inventory-demo.onrender.com/",pos:"https://pro360-store-sg.onrender.com/"};
 async function dlSig(msg){ const enc=new TextEncoder(); const k=await crypto.subtle.importKey("raw",enc.encode(DEMO_LINK_SECRET),{name:"HMAC",hash:"SHA-256"},false,["sign"]); const s=await crypto.subtle.sign("HMAC",k,enc.encode(String(msg))); return [...new Uint8Array(s)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,16); }
 function dlFmt(d){ const p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
 const dlModal=document.getElementById("demoLinkModal");
