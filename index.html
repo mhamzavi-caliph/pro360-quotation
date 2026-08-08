@@ -552,6 +552,7 @@
         <option value="accounting">Accounting</option>
         <option value="inventory">Inventory</option>
         <option value="pos">Point of Sale</option>
+        <option value="mortgage">Mortgage</option>
       </select>
       <label style="display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin:16px 0 6px">Expires at</label>
       <input id="dlExp" type="datetime-local" style="width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)">
@@ -877,9 +878,46 @@ PRODUCTS.pos={name:"Point of Sale",flat:true,unit:"company",unitp:"companies",mi
    {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1000,once:true,postDelivery:true}
  ]
 };
-const ORDER=["sales", "school", "hrms", "legal", "accounting", "inventory", "pos", "custom"];
+PRODUCTS.mortgage={name:"Mortgage Platform",flat:true,unit:"company",unitp:"companies",min:1,max:1,step:1,default:1,defaultTier:1,
+ headline:"Quote the Mortgage Platform",unitNote:"One flat monthly price per company — unlimited advisors.",
+ subline:"White-label mortgage-advisory platform — submissions, banker workflow, commissions, CRM, meetings and your agent network in one place.",
+ bands:[],
+ tiers:[
+   {id:"starter",name:"Starter",tag:"Submissions & your advisor team.",price:299},
+   {id:"growth",name:"Growth",tag:"Add commissions, leads/CRM & meetings.",price:599,pop:"Most popular"},
+   {id:"pro",name:"Pro",tag:"Add recruitment, agent hierarchy & white-label branding.",price:899},
+   {id:"enterprise",name:"Enterprise",tag:"Multi-tenant console, integrations & priority SLA.",price:1299}
+ ],
+ details:{
+   starter:{blurb:"Get advisors submitting deals — config-driven order forms and your team, branded as you.",groups:[
+     {h:"Submissions",items:["Config-driven order forms (NM / LHM / MHQ)","Products: BDM, CCI, LHM, NM","Banker email → Letter of Offer → approved flow","Submission status tracking"]},
+     {h:"Team",items:["Advisor directory","Rank hierarchy","Roles & access"]},
+     {h:"Platform",items:["Your logo & colours","Advisor dashboard","Private, isolated company data"]}
+   ]},
+   growth:{blurb:"Run the business — commissions, a lead pipeline and meetings on top of submissions.",inherits:"Starter",groups:[
+     {h:"Commissions",items:["NM differential-override rate table","Payout calculator","Commission statements"]},
+     {h:"Leads & CRM",items:["Prospect pipeline","Excel import","Round-robin distribution"]},
+     {h:"Meetings",items:["Schedule & log meetings","Reminders"]}
+   ]},
+   pro:{blurb:"Grow the network — recruitment, full agent hierarchy and your own white-label brand.",inherits:"Growth",groups:[
+     {h:"Recruitment",items:["Recruitment pipeline","Agent onboarding","Network growth tracking"]},
+     {h:"Agent network",items:["Full rank hierarchy & overrides","Downline visibility","Upline reporting"]},
+     {h:"White-label",items:["Per-company branding & products","Custom domain","Banker / LO workflow"]}
+   ]},
+   enterprise:{blurb:"Everything, for a multi-brand group — run many companies from one console.",inherits:"Pro",groups:[
+     {h:"Scale & governance",items:["Multi-company / tenant console","Integrations & API","Audit trail","User roles & permissions"]},
+     {h:"Service",items:["Priority support & SLA","Guided setup & migration","Dedicated data isolation"]}
+   ]}
+ },
+ addons:[
+   {id:"setup",name:"Setup & onboarding",desc:"Branding, products & advisor import",cost:2500,once:true},
+   {id:"whitelabel",name:"White-label branding",desc:"Custom domain & full theming",cost:1500,once:true},
+   {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1200,once:true,postDelivery:true}
+ ]
+};
+const ORDER=["sales", "school", "hrms", "legal", "accounting", "inventory", "pos", "mortgage", "custom"];
 // Live-demo sites (one-click persona login via ?demo). Add school/hrms when their demos are up.
-const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo", accounting:"https://pro360-accounting-demo.onrender.com", inventory:"https://pro360-inventory-demo.onrender.com/", pos:"https://pro360-store-sg.onrender.com/" };
+const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo", accounting:"https://pro360-accounting-demo.onrender.com", inventory:"https://pro360-inventory-demo.onrender.com/", pos:"https://pro360-store-sg.onrender.com/", mortgage:"https://pro360-mortgage-demo.onrender.com/" };
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
 const TAX_PCT=8;
@@ -903,7 +941,7 @@ function bandMultFor(pid,u){ const b=PRODUCTS[pid].bands; if(!b.length) return 1
 const prodswitch=document.getElementById("prodswitch");
 ORDER.forEach((pid,i)=>{ const b=document.createElement("button"); b.dataset.p=pid; b.textContent=PRODUCTS[pid].name; b.setAttribute("aria-pressed", i===0); b.addEventListener("click",()=>loadProduct(pid)); prodswitch.appendChild(b); });
 
-const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",accounting:"📒",inventory:"📦",pos:"🛒",custom:"🧩"};
+const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",accounting:"📒",inventory:"📦",pos:"🛒",mortgage:"🏠",custom:"🧩"};
 function buildLandingTiles(){
   const el=document.getElementById("lTiles"); el.innerHTML="";
   ORDER.forEach(pid=>{ const p=PRODUCTS[pid];
@@ -1648,7 +1686,7 @@ document.getElementById("landingLogout").addEventListener("click", async ()=>{ i
 
 /* ---- Demo link generator (self-expiring signed links) ---- */
 const DEMO_LINK_SECRET="80849e24c8f67b06bb00091ad8ade51212197561d65e8139";
-const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/",inventory:"https://pro360-inventory-demo.onrender.com/",pos:"https://pro360-store-sg.onrender.com/"};
+const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/",inventory:"https://pro360-inventory-demo.onrender.com/",pos:"https://pro360-store-sg.onrender.com/",mortgage:"https://pro360-mortgage-demo.onrender.com/"};
 async function dlSig(msg){ const enc=new TextEncoder(); const k=await crypto.subtle.importKey("raw",enc.encode(DEMO_LINK_SECRET),{name:"HMAC",hash:"SHA-256"},false,["sign"]); const s=await crypto.subtle.sign("HMAC",k,enc.encode(String(msg))); return [...new Uint8Array(s)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,16); }
 function dlFmt(d){ const p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
 const dlModal=document.getElementById("demoLinkModal");
