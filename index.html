@@ -739,10 +739,10 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
 })();
 PRODUCTS.legal={name:"Legal Firm",flat:true,unit:"firm",unitp:"firms",min:1,max:1,step:1,default:1,defaultTier:1,
  headline:"Quote a law firm",unitNote:"One flat monthly price per firm — any number of users included.",
- subline:"Case management for Malaysian law firms — matters, clients, billing, documents and the court calendar in one system.",
+ subline:"Practice management for Malaysian law firms — matters, clients, court forms, billing, HR and the court calendar in one system.",
  bands:[],
  tiers:[
-   {id:"standard",name:"Standard",tag:"Matters, clients & documents — 50 GB storage.",price:599},
+   {id:"standard",name:"Standard",tag:"Matters, clients, court forms & HR — 50 GB storage.",price:599},
    {id:"professional",name:"Professional",tag:"Add full billing; 100 GB document storage.",price:799,pop:"Most popular"},
    {id:"premium",name:"Premium",tag:"Court calendar, integrations & your own Google Drive.",price:1099}
  ],
@@ -751,7 +751,9 @@ PRODUCTS.legal={name:"Legal Firm",flat:true,unit:"firm",unitp:"firms",min:1,max:
      {h:"Cases & matters",items:["Matter setup — Civil, Criminal, Syariah, Native, Industrial","Cascading State → Type → Court picker (16 states & FTs)","Case list with search & filters (state / type / court / status)","Case detail, updates & role-gated delete","Every matter linked to its client"]},
      {h:"Clients & prospects",items:["First-meeting intake (matter, notes, custom fields)","Issue a quotation on the spot","Convert prospect → client (everything carries over)","Client profiles with account strip (Quoted / Invoiced / Paid / Outstanding)"]},
      {h:"Documents & files",items:["Document vault per case & client (admin-named types)","Upload / download / delete files","50 GB document storage included"]},
-     {h:"Tasks, dashboard & access",items:["Per-case tasks + firm-wide Kanban (priorities, due dates)","KPI dashboard — case status, tasks, prospects vs clients","Firm-wide search (cases, tasks, contacts, documents)","Roles: admin / attorney / paralegal / staff · multi-firm isolation"]}
+     {h:"Tasks, dashboard & access",items:["Per-case tasks + firm-wide Kanban (priorities, due dates)","KPI dashboard — case status, tasks, prospects vs clients","Firm-wide search (cases, tasks, contacts, documents)","Roles: admin / attorney / paralegal / staff · multi-firm isolation"]},
+     {h:"Court forms",items:["Malaysian court-forms library — Civil & Syariah","Auto-fill court-form PDFs (Afidavit Balasan, Alasan Rayuan, Semakan…) & download","Organised by category / form number"]},
+     {h:"HR, leave & client portal",items:["Staff HR — employees, departments & roles","Leave types, balances, apply & approve leave","Client portal — clients track their own matter, documents & bills"]}
    ]},
    professional:{blurb:"Add end-to-end billing — turn matters into quotations, invoices and collected payments — with more document storage.",inherits:"Standard",groups:[
      {h:"Billing & finance",items:["Line-item quotations & invoices (MYR)","Quotation → invoice in one click","Invoice lifecycle: draft → sent → paid / void","Record payments (against invoices or as advances)","Per-invoice & per-client outstanding balances","Firm billing dashboard — invoiced / collected / outstanding"]},
