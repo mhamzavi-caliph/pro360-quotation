@@ -920,15 +920,15 @@ PRODUCTS.mortgage={name:"Mortgage Platform",flat:true,unit:"company",unitp:"comp
 };
 PRODUCTS.koperasi={name:"Koperasi",unit:"member",unitp:"members",min:50,max:5000,step:50,default:500,defaultTier:1,minMonthly:399,
  headline:"Quote a koperasi",unitNote:"Billed on active members (anggota), with a volume discount as membership grows.",
- subline:"Membership, share & savings accounts and loan financing for Malaysian cooperatives — one system for members, admins and the parent body.",
+ subline:"Membership, share & savings accounts — with optional loan financing — for Malaysian cooperatives. Koperasi that don't lend start on Membership; those that do add Financing.",
  bands:[{upTo:500,mult:1},{upTo:2000,mult:0.85},{upTo:5000,mult:0.7},{upTo:null,mult:0.55}],
  tiers:[
-   {id:"membership",name:"Membership",tag:"Members, share & savings accounts and statements.",price:2},
-   {id:"financing",name:"Financing",tag:"Add loan financing — apply, approve & collect.",price:3,pop:"Most popular"},
-   {id:"enterprise",name:"Enterprise",tag:"Add dividends, reports & the multi-koperasi console.",price:4}
+   {id:"membership",name:"Membership",tag:"No loans — members, shares, savings & statements. For koperasi that don't lend.",price:2},
+   {id:"financing",name:"Financing",tag:"Membership + full loan financing (apply, approve & collect).",price:3,pop:"Most popular"},
+   {id:"enterprise",name:"Enterprise",tag:"Financing + dividends, reports & the multi-koperasi console.",price:4}
  ],
  details:{
-   membership:{blurb:"Run the koperasi's membership and member accounts — onboarding, shares, savings and statements.",groups:[
+   membership:{blurb:"For koperasi that don't offer loans — membership and member accounts (onboarding, shares, savings and statements) with no financing module at all.",groups:[
      {h:"Membership",items:["Member register (anggota) & profiles","5-step onboarding wizard + self-signup (Daftar Anggota)","Employment & salary details, nominee & guarantor","Approve / activate members (Menunggu → Aktif)"]},
      {h:"Member accounts",items:["Share capital (syer) accounts","Savings (simpanan) accounts","Membership & account statements","Contributions & deductions"]},
      {h:"Member portal & admin",items:["Member portal — dashboard, profile & statements","Bulletin / announcements","Admin dashboard & member management","Roles: member · koperasi admin","Private, isolated per-koperasi data"]}
