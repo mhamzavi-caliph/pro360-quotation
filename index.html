@@ -918,30 +918,24 @@ PRODUCTS.mortgage={name:"Mortgage Platform",flat:true,unit:"company",unitp:"comp
    {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1200,once:true,postDelivery:true}
  ]
 };
-PRODUCTS.koperasi={name:"Koperasi",unit:"member",unitp:"members",min:50,max:5000,step:50,default:500,defaultTier:1,minMonthly:399,
- headline:"Quote a koperasi",unitNote:"Billed on active members (anggota), with a volume discount as membership grows.",
- subline:"Membership, share & savings accounts — with optional loan financing — for Malaysian cooperatives. Koperasi that don't lend start on Membership; those that do add Financing.",
- bands:[{upTo:500,mult:1},{upTo:2000,mult:0.85},{upTo:5000,mult:0.7},{upTo:null,mult:0.55}],
+PRODUCTS.koperasi={name:"Koperasi",flat:true,unit:"koperasi",unitp:"cooperatives",min:1,max:1,step:1,default:1,defaultTier:1,
+ headline:"Quote a koperasi",unitNote:"One flat monthly price per koperasi — unlimited members & admins.",
+ subline:"Membership, share & savings accounts — with optional loan financing — for Malaysian cooperatives. Koperasi that don't lend take Membership; those that do take Financing.",
+ bands:[],
  tiers:[
-   {id:"membership",name:"Membership",tag:"No loans — members, shares, savings & statements. For koperasi that don't lend.",price:2},
-   {id:"financing",name:"Financing",tag:"Membership + full loan financing (apply, approve & collect).",price:3,pop:"Most popular"},
-   {id:"enterprise",name:"Enterprise",tag:"Financing + dividends, reports & the multi-koperasi console.",price:4}
+   {id:"membership",name:"Membership",tag:"No loans — members, shares, savings, dividends & statements. For koperasi that don't lend.",price:299},
+   {id:"financing",name:"Financing",tag:"Everything in Membership plus full loan financing (apply, approve & collect).",price:499,pop:"Most popular"}
  ],
  details:{
-   membership:{blurb:"For koperasi that don't offer loans — membership and member accounts (onboarding, shares, savings and statements) with no financing module at all.",groups:[
+   membership:{blurb:"For koperasi that don't offer loans — full membership and member accounts (shares, savings, dividends, statements and reports) with no financing module at all.",groups:[
      {h:"Membership",items:["Member register (anggota) & profiles","5-step onboarding wizard + self-signup (Daftar Anggota)","Employment & salary details, nominee & guarantor","Approve / activate members (Menunggu → Aktif)"]},
-     {h:"Member accounts",items:["Share capital (syer) accounts","Savings (simpanan) accounts","Membership & account statements","Contributions & deductions"]},
-     {h:"Member portal & admin",items:["Member portal — dashboard, profile & statements","Bulletin / announcements","Admin dashboard & member management","Roles: member · koperasi admin","Private, isolated per-koperasi data"]}
+     {h:"Member accounts",items:["Share capital (syer) accounts","Savings (simpanan) accounts","Dividend (dividen) computation & distribution","Membership & account statements","Contributions & deductions"]},
+     {h:"Reports, portal & admin",items:["Financial & collection reports","Member portal — dashboard, profile & statements","Bulletin / announcements","Admin dashboard & member management","Roles: member · koperasi admin","Unlimited members & admins · private, isolated data"]}
    ]},
-   financing:{blurb:"Turn on loan financing — from eligibility right through to disbursement and collection.",inherits:"Membership",groups:[
+   financing:{blurb:"Everything in Membership, plus loan financing — for koperasi that lend to their members, from eligibility right through to collection.",inherits:"Membership",groups:[
      {h:"Loan products & tools",items:["Loan / financing products","Instalment calculator (flat-rate) + schedule","Eligibility / DSR check (salary-deduction cap)"]},
      {h:"Applications",items:["Apply for financing (product picker + live summary)","Approve / reject workflow","My financing & loan statements","Guarantor management"]},
      {h:"Collections",items:["Repayment / collection tracking","Salary-deduction schedules","Arrears view"]}
-   ]},
-   enterprise:{blurb:"Everything, for a koperasi group or parent body — dividends, full reporting and multi-tenant control.",inherits:"Financing",groups:[
-     {h:"Accounts & dividends",items:["Dividend (dividen) computation & distribution","Year-end member statements","Financial & collection reports"]},
-     {h:"Multi-koperasi console",items:["Cross-cooperative dashboard (Super Admin)","Cooperatives / tenants management","Shared loan-product templates","System reports & audit log"]},
-     {h:"Service",items:["Priority support & SLA","Guided setup & data migration","Dedicated data isolation"]}
    ]}
  },
  addons:[
