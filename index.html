@@ -553,6 +553,7 @@
         <option value="inventory">Inventory</option>
         <option value="pos">Point of Sale</option>
         <option value="mortgage">Mortgage</option>
+        <option value="koperasi">Koperasi</option>
       </select>
       <label style="display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin:16px 0 6px">Expires at</label>
       <input id="dlExp" type="datetime-local" style="width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)">
@@ -917,9 +918,41 @@ PRODUCTS.mortgage={name:"Mortgage Platform",flat:true,unit:"company",unitp:"comp
    {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1200,once:true,postDelivery:true}
  ]
 };
-const ORDER=["sales", "school", "hrms", "legal", "accounting", "inventory", "pos", "mortgage", "custom"];
+PRODUCTS.koperasi={name:"Koperasi",unit:"member",unitp:"members",min:50,max:5000,step:50,default:500,defaultTier:1,minMonthly:399,
+ headline:"Quote a koperasi",unitNote:"Billed on active members (anggota), with a volume discount as membership grows.",
+ subline:"Membership, share & savings accounts and loan financing for Malaysian cooperatives — one system for members, admins and the parent body.",
+ bands:[{upTo:500,mult:1},{upTo:2000,mult:0.85},{upTo:5000,mult:0.7},{upTo:null,mult:0.55}],
+ tiers:[
+   {id:"membership",name:"Membership",tag:"Members, share & savings accounts and statements.",price:2},
+   {id:"financing",name:"Financing",tag:"Add loan financing — apply, approve & collect.",price:3,pop:"Most popular"},
+   {id:"enterprise",name:"Enterprise",tag:"Add dividends, reports & the multi-koperasi console.",price:4}
+ ],
+ details:{
+   membership:{blurb:"Run the koperasi's membership and member accounts — onboarding, shares, savings and statements.",groups:[
+     {h:"Membership",items:["Member register (anggota) & profiles","5-step onboarding wizard + self-signup (Daftar Anggota)","Employment & salary details, nominee & guarantor","Approve / activate members (Menunggu → Aktif)"]},
+     {h:"Member accounts",items:["Share capital (syer) accounts","Savings (simpanan) accounts","Membership & account statements","Contributions & deductions"]},
+     {h:"Member portal & admin",items:["Member portal — dashboard, profile & statements","Bulletin / announcements","Admin dashboard & member management","Roles: member · koperasi admin","Private, isolated per-koperasi data"]}
+   ]},
+   financing:{blurb:"Turn on loan financing — from eligibility right through to disbursement and collection.",inherits:"Membership",groups:[
+     {h:"Loan products & tools",items:["Loan / financing products","Instalment calculator (flat-rate) + schedule","Eligibility / DSR check (salary-deduction cap)"]},
+     {h:"Applications",items:["Apply for financing (product picker + live summary)","Approve / reject workflow","My financing & loan statements","Guarantor management"]},
+     {h:"Collections",items:["Repayment / collection tracking","Salary-deduction schedules","Arrears view"]}
+   ]},
+   enterprise:{blurb:"Everything, for a koperasi group or parent body — dividends, full reporting and multi-tenant control.",inherits:"Financing",groups:[
+     {h:"Accounts & dividends",items:["Dividend (dividen) computation & distribution","Year-end member statements","Financial & collection reports"]},
+     {h:"Multi-koperasi console",items:["Cross-cooperative dashboard (Super Admin)","Cooperatives / tenants management","Shared loan-product templates","System reports & audit log"]},
+     {h:"Service",items:["Priority support & SLA","Guided setup & data migration","Dedicated data isolation"]}
+   ]}
+ },
+ addons:[
+   {id:"setup",name:"Setup & data migration",desc:"Import members, shares & savings balances",cost:2500,once:true},
+   {id:"import",name:"Historical accounts import",desc:"Seed prior shares, savings & loan balances",cost:1200,once:true},
+   {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1200,once:true,postDelivery:true}
+ ]
+};
+const ORDER=["sales", "school", "hrms", "legal", "accounting", "inventory", "pos", "mortgage", "koperasi", "custom"];
 // Live-demo sites (one-click persona login via ?demo). Add school/hrms when their demos are up.
-const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo", accounting:"https://pro360-accounting-demo.onrender.com", inventory:"https://pro360-inventory-demo.onrender.com/", pos:"https://pro360-store-sg.onrender.com/", mortgage:"https://pro360-mortgage-demo.vercel.app/" };
+const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo", accounting:"https://pro360-accounting-demo.onrender.com", inventory:"https://pro360-inventory-demo.onrender.com/", pos:"https://pro360-store-sg.onrender.com/", mortgage:"https://pro360-mortgage-demo.vercel.app/", koperasi:"https://pro360-koperasi-demo.onrender.com/" };
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
 const TAX_PCT=8;
@@ -943,7 +976,7 @@ function bandMultFor(pid,u){ const b=PRODUCTS[pid].bands; if(!b.length) return 1
 const prodswitch=document.getElementById("prodswitch");
 ORDER.forEach((pid,i)=>{ const b=document.createElement("button"); b.dataset.p=pid; b.textContent=PRODUCTS[pid].name; b.setAttribute("aria-pressed", i===0); b.addEventListener("click",()=>loadProduct(pid)); prodswitch.appendChild(b); });
 
-const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",accounting:"📒",inventory:"📦",pos:"🛒",mortgage:"🏠",custom:"🧩"};
+const LICONS={sales:"📈",school:"🎓",hrms:"👥",legal:"⚖️",accounting:"📒",inventory:"📦",pos:"🛒",mortgage:"🏠",koperasi:"🤝",custom:"🧩"};
 function buildLandingTiles(){
   const el=document.getElementById("lTiles"); el.innerHTML="";
   ORDER.forEach(pid=>{ const p=PRODUCTS[pid];
@@ -1688,7 +1721,7 @@ document.getElementById("landingLogout").addEventListener("click", async ()=>{ i
 
 /* ---- Demo link generator (self-expiring signed links) ---- */
 const DEMO_LINK_SECRET="80849e24c8f67b06bb00091ad8ade51212197561d65e8139";
-const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/",inventory:"https://pro360-inventory-demo.onrender.com/",pos:"https://pro360-store-sg.onrender.com/",mortgage:"https://pro360-mortgage-demo.vercel.app/"};
+const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/",inventory:"https://pro360-inventory-demo.onrender.com/",pos:"https://pro360-store-sg.onrender.com/",mortgage:"https://pro360-mortgage-demo.vercel.app/",koperasi:"https://pro360-koperasi-demo.onrender.com/"};
 async function dlSig(msg){ const enc=new TextEncoder(); const k=await crypto.subtle.importKey("raw",enc.encode(DEMO_LINK_SECRET),{name:"HMAC",hash:"SHA-256"},false,["sign"]); const s=await crypto.subtle.sign("HMAC",k,enc.encode(String(msg))); return [...new Uint8Array(s)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,16); }
 function dlFmt(d){ const p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
 const dlModal=document.getElementById("demoLinkModal");
