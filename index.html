@@ -679,7 +679,8 @@ PRODUCTS.custom={name:"Custom Build",custom:true,headline:"Build a custom system
   {id:"core",name:"Core platform & user management",desc:"Roles, permissions, secure login, admin console",price:3600},
   {id:"dash",name:"Custom dashboard & analytics",desc:"KPI cards, charts, exportable reports",price:2400},
   {id:"branch",name:"Multi-branch / multi-company",desc:"Branches with cross-branch reporting",price:2400},
-  {id:"mobile",name:"Mobile-responsive web app",desc:"Works on any phone browser",price:1800}]},
+  {id:"mobile",name:"Mobile-responsive web app",desc:"Works on any phone browser",price:1800},
+  {id:"website",name:"Custom-built website",desc:"Bespoke company / marketing website · yearly maintenance",price:800,setup:1000,head:10,features:["Custom design, build & launch","Domain & hosting setup","One-time build fee (added to project setup)","Yearly maintenance & security updates"]}]},
  {h:"Sales & CRM",items:[
   {id:"lead",name:"Lead & pipeline management",desc:"Capture, assign, stages, reminders",price:2400},
   {id:"crm",name:"Customer database (CRM)",desc:"Profiles, history, notes",price:1800},
@@ -1248,15 +1249,15 @@ function calcOne(pid){
     const headUnit=isSchool?"students":"staff";
     const minH=isSchool?((p.headMin&&p.headMin.student)||50):((p.headMin&&p.headMin.staff)||20);
     const heads=Math.max(minH, +c.heads||minH), headFloored=perHead&&(+c.heads||0)<minH;
-    const items=[]; let rawFlat=0, rawHeadRate=0;
+    const items=[]; let rawFlat=0, rawHeadRate=0, modSetup=0;
     p.groups.forEach(g=>g.items.forEach(m=>{ if(c.picked.has(m.id)){
       const amt=(perHead?(m.head*heads):m.price)*rate;
-      rawFlat+=m.price*rate; rawHeadRate+=m.head*rate;
+      rawFlat+=m.price*rate; rawHeadRate+=m.head*rate; modSetup+=(m.setup||0)*rate;
       items.push({id:m.id,name:m.name,amt,headRate:m.head*rate,flat:m.price*rate}); } }));
     let annualLic, floored=false;
     if(perHead){ annualLic=rawHeadRate*heads; }
     else { const floorAmt=(p.minAnnual||0)*rate; floored=rawFlat>0&&rawFlat<floorAmt; annualLic=floored?floorAmt:rawFlat; }
-    const setup=c.setup?(p.setup.cost*rate):0;
+    const setup=(c.setup?p.setup.cost*rate:0)+modSetup;
     return {p,custom:true,perHead,heads,minH,headFloored,headUnit,ctype:c.type,items,t:{name:"Custom build"},annualLic,rawModules:perHead?annualLic:rawFlat,rawHeadRate,billUnits:0,mult:1,perUnit:0,seats:annualLic,rec:0,once:setup,onceProj:setup,oncePost:0,yr:0,addOn:[],addOnce:[],addYear:[],monthlyRecurring:annualLic/12,seatsBilled:annualLic,recurringTotal:annualLic,billedNow:annualLic+setup,floored,annual:true};
   }
   const billUnits=Math.max(p.min, c.units), t=tierOf(pid,c.tier);
