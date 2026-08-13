@@ -1653,7 +1653,7 @@ async function saveToFinance(){
 
 async function loadRemote(){
   if(!sb){ REMOTE=[]; updateSavedCount(); return; }
-  let qy=sb.from("quotations").select("id,quote_no,total,subtotal,tax_pct,tax_amount,status,issue_date,valid_until,notes,customers(company_name)").order("created_at",{ascending:false}).limit(50);
+  let qy=sb.from("quotations").select("id,quote_no,total,subtotal,tax_pct,tax_amount,status,issue_date,valid_until,notes,created_at,customers(company_name),agents(full_name)").order("created_at",{ascending:false}).limit(50);
   if(AGENT&&AGENT.id) qy=qy.eq("agent_id",AGENT.id);
   const { data,error }=await qy;
   REMOTE=error?[]:(data||[]); updateSavedCount(); renderSavedList(); renderDashboard();
@@ -1742,9 +1742,10 @@ function renderSavedList(){
   const b=document.getElementById("savedBody");
   if(!REMOTE.length){ b.innerHTML='<p style="color:var(--ink-faint); font-size:14px; text-align:center; padding:24px 0;">No quotations saved to Finance yet. Build a quote and click "Save to Finance".</p>'; return; }
   const S=cfg.CURRENCY_SYMBOL||"RM";
+  const whenOf=q=>{ const d=q.created_at||q.issue_date; return d?new Date(d).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}):""; };
   b.innerHTML=REMOTE.map(q=>`<div class="saved-item" data-view="${q.id}" style="cursor:pointer">
-    <div class="si-main"><b>${q.quote_no||"(draft)"}</b><small>${(q.customers&&q.customers.company_name)||"—"} · ${q.status}</small></div>
-    <div class="si-side"><span class="si-total">${S+" "+Number(q.total||0).toLocaleString("en-MY",{minimumFractionDigits:2,maximumFractionDigits:2})}</span><span class="si-date">${q.issue_date||""} ›</span></div>
+    <div class="si-main"><b>${q.quote_no||"(draft)"}</b><small>${(q.customers&&q.customers.company_name)||"—"} · ${q.status} · by ${(q.agents&&q.agents.full_name)||"—"}</small></div>
+    <div class="si-side"><span class="si-total">${S+" "+Number(q.total||0).toLocaleString("en-MY",{minimumFractionDigits:2,maximumFractionDigits:2})}</span><span class="si-date">${whenOf(q)} ›</span></div>
   </div>`).join("");
   b.querySelectorAll("[data-view]").forEach(el=>el.addEventListener("click",()=>viewSavedQuote(el.dataset.view)));
 }
