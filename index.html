@@ -1014,6 +1014,15 @@ PRODUCTS.koperasi={name:"Koperasi",flat:true,unit:"koperasi",unitp:"cooperatives
 const ORDER=["sales", "school", "hrms", "legal", "accounting", "inventory", "pos", "mortgage", "koperasi", "custom"];
 // Live-demo sites (one-click persona login via ?demo). Add school/hrms when their demos are up.
 const DEMO_URLS={ sales:"https://pro360-oneagency.onrender.com/?demo", school:"https://pro360-sis.onrender.com/login?demo", hrms:"https://pro360-hrms-demo.onrender.com/?demo", legal:"https://pro360-legal-demo.onrender.com/login?demo", accounting:"https://pro360-accounting-demo.onrender.com", inventory:"https://pro360-inventory-demo.onrender.com/", pos:"https://pro360-store-sg.onrender.com/", mortgage:"https://pro360-mortgage-demo.vercel.app/", koperasi:"https://pro360-koperasi-demo.onrender.com/" };
+// Demo-only systems — shown ONLY to the superadmin. Not sellable products (no
+// pricing / no quote flow); each is just an internal demo + a demo link.
+const SUPERADMIN_EMAILS=["mhamzavi@gmail.com"];
+function isSuperadmin(){ return !!(typeof AGENT!=="undefined" && AGENT && AGENT.email && SUPERADMIN_EMAILS.includes(String(AGENT.email).toLowerCase())); }
+const DEMO_ONLY=[
+  { id:"bankmuamalat", name:"Bank Muamalat — Sales Command Centre", icon:"🏦",
+    subline:"Bancatakaful sales-performance command centre — Group CEO to consultant, by branch & region.",
+    demo:"https://bank-muamalat-demo.onrender.com/" }
+];
 const RATES={ MYR:1, SGD:0.31, USD:0.22, IDR:3550 };
 const ANNUAL_MONTHS=10;
 const TAX_PCT=8;
@@ -1052,9 +1061,31 @@ function buildLandingTiles(){
       dm.addEventListener("click",e=>e.stopPropagation()); d.appendChild(dm); }
     el.appendChild(d);
   });
+  // Demo-only tiles — internal systems that are not sold; superadmin only.
+  if(isSuperadmin()){
+    DEMO_ONLY.forEach(x=>{
+      const d=document.createElement("div"); d.className="l-tile"; d.setAttribute("role","button"); d.setAttribute("tabindex","0");
+      d.innerHTML=`<div class="ic">${x.icon||"•"}</div><h3>${x.name}</h3><p>${x.subline}</p><span class="meta">🔒 Internal demo · superadmin only</span><span class="go">Open demo ↗</span>`;
+      const open=()=>window.open(x.demo,"_blank","noopener");
+      d.addEventListener("click",open);
+      d.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } });
+      const dm=document.createElement("a"); dm.href=x.demo; dm.target="_blank"; dm.rel="noopener";
+      dm.innerHTML='🔎 Live demo ↗';
+      dm.style.cssText="display:inline-block;margin-top:12px;font-size:12.5px;font-weight:800;color:var(--gold-ink);text-decoration:none";
+      dm.addEventListener("click",e=>e.stopPropagation()); d.appendChild(dm);
+      el.appendChild(d);
+    });
+  }
+}
+// Keep the demo-link generator's product list in sync with superadmin status.
+function syncSuperadminUI(){
+  const sel=document.getElementById("dlProd"); if(!sel) return;
+  const has=[...sel.options].some(o=>o.value==="bankmuamalat");
+  if(isSuperadmin() && !has){ const o=document.createElement("option"); o.value="bankmuamalat"; o.textContent="Bank Muamalat (internal)"; sel.appendChild(o); }
+  else if(!isSuperadmin() && has){ [...sel.options].forEach(o=>{ if(o.value==="bankmuamalat") o.remove(); }); }
 }
 function enterApp(){ document.getElementById("landing").style.display="none"; document.getElementById("app").style.display="block"; window.scrollTo(0,0); }
-function showLanding(){ document.getElementById("app").style.display="none"; document.getElementById("landing").style.display="flex"; updateSavedCount(); renderDashboard(); window.scrollTo(0,0); }
+function showLanding(){ document.getElementById("app").style.display="none"; document.getElementById("landing").style.display="flex"; buildLandingTiles(); syncSuperadminUI(); updateSavedCount(); renderDashboard(); window.scrollTo(0,0); }
 function startProduct(pid){ enterApp(); loadProduct(pid); }
 function setCustomUI(on){
   const ctrls=document.querySelector(".ctrls"); if(ctrls) ctrls.style.display=on?"none":"";
@@ -1864,6 +1895,7 @@ document.getElementById("landingLogout").addEventListener("click", async ()=>{ i
 /* ---- Demo link generator (self-expiring signed links) ---- */
 const DEMO_LINK_SECRET="80849e24c8f67b06bb00091ad8ade51212197561d65e8139";
 const DEMO_LINK_BASES={sales:"https://pro360-oneagency.onrender.com/",school:"https://pro360-sis.onrender.com/login",hrms:"https://pro360-hrms-demo.onrender.com/",legal:"https://pro360-legal-demo.onrender.com/login",accounting:"https://pro360-accounting-demo.onrender.com/",inventory:"https://pro360-inventory-demo.onrender.com/",pos:"https://pro360-store-sg.onrender.com/",mortgage:"https://pro360-mortgage-demo.vercel.app/",koperasi:"https://pro360-koperasi-demo.onrender.com/"};
+DEMO_LINK_BASES.bankmuamalat="https://bank-muamalat-demo.onrender.com/";   // internal — dropdown option is superadmin-gated
 async function dlSig(msg){ const enc=new TextEncoder(); const k=await crypto.subtle.importKey("raw",enc.encode(DEMO_LINK_SECRET),{name:"HMAC",hash:"SHA-256"},false,["sign"]); const s=await crypto.subtle.sign("HMAC",k,enc.encode(String(msg))); return [...new Uint8Array(s)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,16); }
 function dlFmt(d){ const p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; }
 const dlModal=document.getElementById("demoLinkModal");
