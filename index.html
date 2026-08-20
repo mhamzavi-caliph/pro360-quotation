@@ -810,30 +810,32 @@ PRODUCTS.legal={name:"Legal Firm",flat:true,unit:"firm",unitp:"firms",min:1,max:
  subline:"Practice management for Malaysian law firms — matters, clients, court forms, billing, HR and the court calendar in one system.",
  bands:[],
  tiers:[
-   {id:"standard",name:"Standard",tag:"Matters, clients, court forms & HR — 50 GB storage.",price:399},
-   {id:"professional",name:"Professional",tag:"Add full billing; 100 GB document storage.",price:699,pop:"Most popular"},
-   {id:"premium",name:"Premium",tag:"Court calendar, integrations & your own Google Drive.",price:899}
+   {id:"standard",name:"Standard",tag:"Matters, clients, court forms, HR & client portal — 80 GB.",price:399},
+   {id:"professional",name:"Professional",tag:"Add billing & the firm court calendar — 200 GB.",price:699,pop:"Most popular"},
+   {id:"premium",name:"Premium",tag:"Custom workflows, SSO, priority SLA & 1 TB storage.",price:899}
  ],
  details:{
    standard:{blurb:"Everything a firm needs to run its matters and clients — built around the Malaysian court structure.",groups:[
      {h:"Cases & matters",items:["Matter setup — Civil, Criminal, Syariah, Native, Industrial","Cascading State → Type → Court picker (16 states & FTs)","Case list with search & filters (state / type / court / status)","Case detail, updates & role-gated delete","Every matter linked to its client"]},
      {h:"Clients & prospects",items:["First-meeting intake (matter, notes, custom fields)","Issue a quotation on the spot","Convert prospect → client (everything carries over)","Client profiles with account strip (Quoted / Invoiced / Paid / Outstanding)"]},
-     {h:"Documents & files",items:["Document vault per case & client (admin-named types)","Upload / download / delete files","50 GB document storage included"]},
+     {h:"Documents & files",items:["Document vault per case & client (admin-named types)","Upload / download / delete files","80 GB document storage included"]},
      {h:"Tasks, dashboard & access",items:["Per-case tasks + firm-wide Kanban (priorities, due dates)","KPI dashboard — case status, tasks, prospects vs clients","Firm-wide search (cases, tasks, contacts, documents)","Roles: admin / attorney / paralegal / staff · multi-firm isolation"]},
      {h:"Court forms",items:["Malaysian court-forms library — Civil & Syariah","Auto-fill court-form PDFs (Afidavit Balasan, Alasan Rayuan, Semakan…) & download","Organised by category / form number"]},
      {h:"HR, leave & client portal",items:["Staff HR — employees, departments & roles","Leave types, balances, apply & approve leave","Client portal — clients track their own matter, documents & bills"]}
    ]},
-   professional:{blurb:"Add end-to-end billing — turn matters into quotations, invoices and collected payments — with more document storage.",inherits:"Standard",groups:[
+   professional:{blurb:"Add end-to-end billing and the firm court calendar — turn matters into quotations, invoices and collected payments, and run every hearing, deadline and meeting in one place.",inherits:"Standard",groups:[
      {h:"Billing & finance",items:["Line-item quotations & invoices (MYR)","Quotation → invoice in one click","Invoice lifecycle: draft → sent → paid / void","Record payments (against invoices or as advances)","Per-invoice & per-client outstanding balances","Firm billing dashboard — invoiced / collected / outstanding"]},
-     {h:"Storage",items:["Document storage upgraded to 100 GB"]}
+     {h:"Court calendar",items:["Firm calendar — Day / Week / Month views","Court dates & meetings, assign a lawyer","Availability check & clash detection","Add to Google Calendar (.ics)"]},
+     {h:"Storage",items:["Document storage upgraded to 200 GB"]}
    ]},
-   premium:{blurb:"The full firm platform — document vault, the court calendar and integrations on top of Professional.",inherits:"Professional",groups:[
-     {h:"Documents & court calendar",items:["Connect your own Google Drive — unlimited storage","Firm calendar — Day / Week / Month views","Court dates & meetings, assign a lawyer","Availability check & clash detection","Add to Google Calendar (.ics)"]},
-     {h:"Configure & integrate",items:["Custom required-documents per firm","Custom intake fields per firm","Google sign-in (OAuth) with secure sessions","Pluggable storage & database (Local / Drive · SQLite / Supabase)"]}
+   premium:{blurb:"The full firm platform — custom intake & document workflows, single sign-on, priority support and 1 TB of document storage, on top of Professional.",inherits:"Professional",groups:[
+     {h:"Custom workflows",items:["Custom required-documents per firm","Custom intake fields per firm"]},
+     {h:"Sign-in & storage",items:["Single sign-on — Google (OAuth) with secure sessions","Document storage upgraded to 1 TB"]},
+     {h:"Service",items:["Priority support & SLA"]}
    ]}
  },
  addons:[
-   {id:"storage",name:"Extra storage — +50 GB",desc:"Additional document storage block",cost:49,once:false,qty:true},
+   {id:"storage",name:"Extra storage — +50 GB",desc:"Add 50 GB of document storage · billed monthly",cost:49,once:false,qty:true},
    {id:"setup",name:"Setup & data migration",desc:"Import matters, clients & documents",cost:2500,once:true},
    {id:"training",name:"Onsite training",desc:"Half-day · after delivery",cost:1200,once:true,postDelivery:true}
  ]
