@@ -1813,6 +1813,7 @@ async function viewSavedQuote(id){
 }
 function printSavedQuote(q,itemsHtml,m){
   const cust=(q.customers&&q.customers.company_name)||"—";
+  const logoSrc=(document.querySelector(".qs-logo")||{}).src||"";
   const win=window.open("","_blank","width=820,height=920");
   if(!win){ toast("Allow popups to print this quote",true); return; }
   win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${q.quote_no||"Quotation"}</title>
@@ -1829,7 +1830,7 @@ function printSavedQuote(q,itemsHtml,m){
   tfoot .total td{font-weight:800;font-size:15px;color:#14303e;border-top:2px solid #14303e;padding-top:10px}
   .notes{margin-top:18px;font-size:12.5px;background:#f5f7f1;border-radius:10px;padding:12px 14px;color:#333}
   .foot{margin-top:34px;font-size:11px;color:#999;text-align:center}@media print{body{padding:0}}</style></head><body>
-  <div class="head"><div class="co">Pro360 Technology</div>
+  <div class="head"><div class="co">${logoSrc?`<img src="${logoSrc}" alt="Pro360 Technology" style="height:44px;width:auto;display:block">`:"Pro360 Technology"}</div>
     <div style="text-align:right"><div class="doc-title">QUOTATION</div>
     <div class="meta"><b>${q.quote_no||"(draft)"}</b><br>Issued: ${q.issue_date||""}${q.valid_until?"<br>Valid until: "+q.valid_until:""}<br>Status: ${q.status||""}</div></div></div>
   <div class="billto"><div class="lbl">Prepared for</div><div class="name">${cust}</div></div>
