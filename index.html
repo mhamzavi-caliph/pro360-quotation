@@ -810,28 +810,27 @@ PRODUCTS.legal={name:"Legal Firm",flat:true,unit:"firm",unitp:"firms",min:1,max:
  subline:"Practice management for Malaysian law firms — matters, clients, court forms, billing, HR and the court calendar in one system.",
  bands:[],
  tiers:[
-   {id:"standard",name:"Standard",tag:"Matters, clients, court forms, HR & client portal — 80 GB.",price:399},
-   {id:"professional",name:"Professional",tag:"Add billing & the firm court calendar — 200 GB.",price:699,pop:"Most popular"},
-   {id:"premium",name:"Premium",tag:"Custom workflows, SSO, priority SLA & 600 GB storage.",price:899}
+   {id:"standard",name:"Standard",tag:"Cases, clients, court forms & client portal — 100 GB.",price:399},
+   {id:"professional",name:"Professional",tag:"Add billing, court calendar & HR / payroll — 300 GB.",price:699,pop:"Most popular"},
+   {id:"premium",name:"Premium",tag:"Add GPS attendance, priority support & 600 GB.",price:899}
  ],
  details:{
    standard:{blurb:"Everything a firm needs to run its matters and clients — built around the Malaysian court structure.",groups:[
-     {h:"Cases & matters",items:["Matter setup — Civil, Criminal, Syariah, Native, Industrial","Cascading State → Type → Court picker (16 states & FTs)","Case list with search & filters (state / type / court / status)","Case detail, updates & role-gated delete","Every matter linked to its client"]},
-     {h:"Clients & prospects",items:["First-meeting intake (matter, notes, custom fields)","Issue a quotation on the spot","Convert prospect → client (everything carries over)","Client profiles with account strip (Quoted / Invoiced / Paid / Outstanding)"]},
-     {h:"Documents & files",items:["Document vault per case & client (admin-named types)","Upload / download / delete files","80 GB document storage included"]},
-     {h:"Tasks, dashboard & access",items:["Per-case tasks + firm-wide Kanban (priorities, due dates)","KPI dashboard — case status, tasks, prospects vs clients","Firm-wide search (cases, tasks, contacts, documents)","Roles: admin / attorney / paralegal / staff · multi-firm isolation"]},
-     {h:"Court forms",items:["Malaysian court-forms library — Civil & Syariah","Auto-fill court-form PDFs (Afidavit Balasan, Alasan Rayuan, Semakan…) & download","Organised by category / form number"]},
-     {h:"HR, leave & client portal",items:["Staff HR — employees, departments & roles","Leave types, balances, apply & approve leave","Client portal — clients track their own matter, documents & bills"]}
+     {h:"Cases & matters",items:["Matter types — Civil, Criminal, Syariah, Native, Industrial","State → Type → Court picker (+ Pejabat Pusaka venues)","Case list with search & filters (state / type / court / status)","Case detail, updates & role-gated delete","Every matter linked to its client"]},
+     {h:"Clients & prospects",items:["First-meeting intake (matter, notes, custom fields)","Quotations with online e-signature","Convert prospect → client (everything carries over)","Client profiles with account strip (Quoted / Invoiced / Paid / Outstanding)"]},
+     {h:"Documents & client portal",items:["Document vault per case & client (admin-named types)","Upload / download / delete, with trash & 30-day recovery","Client portal — clients track their matter, documents & bills","100 GB document storage included"]},
+     {h:"Tasks, dashboard & team",items:["Per-case tasks + firm-wide Kanban (priorities, due dates)","KPI dashboard, pending approvals & firm-wide search (records + pages)","Roles: admin, lawyer, paralegal, paralegal (non-employed), staff, intern, HR, finance","Multi-branch data isolation · bilingual English / Bahasa Melayu"]},
+     {h:"Court forms",items:["Malaysian court-forms library — Syariah, Criminal (CPC) & Land & Mine (JKPTG)","Fill online & download (auto field maps, Arial 12)","Organised by category / form number"]}
    ]},
-   professional:{blurb:"Add end-to-end billing and the firm court calendar — turn matters into quotations, invoices and collected payments, and run every hearing, deadline and meeting in one place.",inherits:"Standard",groups:[
-     {h:"Billing & finance",items:["Line-item quotations & invoices (MYR)","Quotation → invoice in one click","Invoice lifecycle: draft → sent → paid / void","Record payments (against invoices or as advances)","Per-invoice & per-client outstanding balances","Firm billing dashboard — invoiced / collected / outstanding"]},
-     {h:"Court calendar",items:["Firm calendar — Day / Week / Month views","Court dates & meetings, assign a lawyer","Availability check & clash detection","Add to Google Calendar (.ics)"]},
-     {h:"Storage",items:["Document storage upgraded to 200 GB"]}
+   professional:{blurb:"Add end-to-end billing, the firm court calendar and full HR & payroll — turn matters into quotations, invoices and collected payments, run every hearing and deadline, and manage staff, leave and payslips.",inherits:"Standard",groups:[
+     {h:"Billing & finance",items:["Line-item quotations & invoices (MYR) with per-line SST (8%)","Quotation → invoice in one click; lifecycle draft → sent → paid / void","Record payments, receipts & payment vouchers / disbursements","Expense claims & reimbursements","Per-invoice & per-client outstanding balances","Firm billing dashboard — invoiced / collected / outstanding"]},
+     {h:"Court calendar",items:["Firm calendar — Day / Week / Month views","Court dates & meetings, assign a lawyer","Availability check & clash detection"]},
+     {h:"HR & payroll",items:["Staff directory, departments & leave (apply / approve)","Payslips & payroll — EPF / SOCSO / EIS / PCB","Form EA — annual statement of remuneration (C.P.8A)"]},
+     {h:"Storage",items:["Document storage upgraded to 300 GB"]}
    ]},
-   premium:{blurb:"The full firm platform — custom intake & document workflows, single sign-on, priority support and 600 GB of document storage, on top of Professional.",inherits:"Professional",groups:[
-     {h:"Custom workflows",items:["Custom required-documents per firm","Custom intake fields per firm"]},
-     {h:"Sign-in & storage",items:["Single sign-on — Google (OAuth) with secure sessions","Document storage upgraded to 600 GB"]},
-     {h:"Service",items:["Priority support & SLA"]}
+   premium:{blurb:"The full firm platform — GPS staff attendance, priority support and 600 GB of document storage, on top of Professional.",inherits:"Professional",groups:[
+     {h:"Attendance",items:["GPS attendance — staff clock-in / out with location captured","Team attendance view for HR"]},
+     {h:"Service & storage",items:["Priority support & onboarding","Document storage upgraded to 600 GB"]}
    ]}
  },
  addons:[
